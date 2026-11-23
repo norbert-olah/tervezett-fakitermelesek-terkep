@@ -3,7 +3,8 @@
 // Használat:
 //  1. Nyisd meg: https://erdoterkep.nebih.gov.hu/ (a WFS csak innen érhető el, más oldalról CORS miatt nem)
 //  2. F12 → Console, másold be ezt a scriptet. Előtte töltsd ki az INPUT-ot VAGY a ROWS-t:
-//     - INPUT: soronként „Település tag részlet | fahasználat | várható befejezés (opcionális)”
+//     - INPUT: soronként „Település tag részlet | fahasználat | várható befejezés (opcionális)”;
+//              a fahasználat lehet hivatalos kód, hivatalos név vagy a CODES táblában felsorolt saját elnevezés
 //              → a geometriát is a NÉBIH-ből veszi (pl. BP Erdő-féle listákhoz)
 //     - ROWS:  a mymaps-kml-export.js vagy a powerbi-export.js kimenete. Ha egy sorban van
 //              geometria (g), azt tartja meg, ha nincs (g: null, pl. pontos My Maps), a NÉBIH-ét veszi.
@@ -15,8 +16,26 @@ const INPUT = `
 Dunaszentmiklós 12 E | növekedésfokozó gyérítés
 Lábatlan 19 B | bontás
 `;
+// a forrás saját elnevezése → hivatalos kód (az INPUT-hoz; indoklás: docs/fahasznalati-modok.md, „Leképezés”)
+const CODES = { 'növekedésfokozó gyérítés': 'NFGY', 'bontás': 'FVB', 'szerkezetátalakítás': 'SZA' };   // BP Erdő
 const ROWS = null;            // pl. ROWS = [ ...a mymaps-kml-export.js / powerbi-export.js kimenete... ]
 const ALIAS = { 'HÁNTA': 'KISBÉR-HÁNTA' };   // ha a forrás más településnevet használ, mint a NÉBIH
+
+
+// Hivatalos (NÉBIH) fakitermelési és haszonvételi kódok → név; a térkép MODES kulcsai (docs/fahasznalati-modok.md)
+const OFFICIAL = { TI: 'Tisztítás', TKGY: 'Törzskiválasztó gyérítés', NFGY: 'Növedékfokozó gyérítés', HGY: 'Haszonvételi gyérítés',
+  'EÜ': 'Egészségügyi fakitermelés', ET: 'Egyéb termelés', KGH: 'Készletgondozó használat', SZV: 'Szálalóvágás',
+  FVB: 'Felújító vágás bontó vágása', FVV: 'Felújító vágás végvágása', TRV: 'Tarvágás',
+  'VÁT': 'Erdőfelújítás érdekében végzett vágástakarítás', 'ÁP': 'Erdősítés érdekében végzett ápolás',
+  'BEFÁP': 'Befejezett ápolás során végzett ápolóvágás', FFK: 'Faanyag felkészítése', 'FGÁ': 'Fekvő gally gyűjtése, nyesés',
+  CSK: 'Cserje kitermelése', TK: 'Tuskó termelése' };
+const EXTRA_KEYS = ['SZA'];   // a térképen használt, de nem hatósági kulcs (szerkezetátalakítás)
+// forrás saját elnevezése → kód: előbb a codes tábla, aztán maga a kód, aztán a hivatalos név (kis/nagybetű nem számít)
+const toCode = (v, codes) => { if (!v) return v; const s = v.trim().replace(/\s+/g, ' '), l = s.toLowerCase();
+  for (const [k, c] of Object.entries(codes)) if (k.toLowerCase() === l) return c;
+  if (OFFICIAL[s.toUpperCase()] || EXTRA_KEYS.includes(s.toUpperCase())) return s.toUpperCase();
+  return Object.keys(OFFICIAL).find(k => OFFICIAL[k].toLowerCase() === l) || s; };
+const isKnown = c => !!OFFICIAL[c] || EXTRA_KEYS.includes(c);
 
 (async () => {
   const enc = pts => { let s = '', pl = 0, pn = 0;
@@ -27,7 +46,8 @@ const ALIAS = { 'HÁNTA': 'KISBÉR-HÁNTA' };   // ha a forrás más település
     return s; };
   const rows = ROWS || INPUT.trim().split('\n').filter(l => l.trim()).map(l => {
     const [nev, haszn, befejezes] = l.split('|').map(s => s.trim());
-    return { nev: nev.replace(/(\d+)\s*([A-ZÁÉÍÓÖŐÚÜŰ]+)$/, '$1 $2'), haszn: haszn.toLowerCase(), befejezes: befejezes || null, g: null }; });
+    return { nev: nev.replace(/(\d+)\s*([A-ZÁÉÍÓÖŐÚÜŰ]+)$/, '$1 $2'), haszn: toCode(haszn, CODES), befejezes: befejezes || null, g: null }; });
+  const unknownModes = [...new Set(rows.map(r => r.haszn).filter(h => !isKnown(h)))];
   // NÉBIH-kulcs: „TELEPÜLÉS TAG/RÉSZLET”, alrészletnél szóközzel: „B2” / „B 2” → „B 2”
   const key = n => { const m = n.match(/^(.+) (\d+) ?([A-ZÁÉÍÓÖŐÚÜŰ0-9 ]+)$/);
     if (!m) return null; const h = m[1].toUpperCase();
@@ -59,5 +79,6 @@ const ALIAS = { 'HÁNTA': 'KISBÉR-HÁNTA' };   // ha a forrás más település
     return row;
   }).filter(r => r[10]);
   copy(out.map(r => JSON.stringify(r)).join(',\n'));
-  console.log(`${out.length} sor a vágólapon.`, missing.length ? 'Nem található a NÉBIH-ben:' : '', missing);
+  console.log(`${out.length} sor a vágólapon.`, missing.length ? 'Nem található a NÉBIH-ben:' : '', missing,
+    unknownModes.length ? 'Ismeretlen fahasználati módok (a CODES-ban kell a hivatalos kódra fordítani):' : '', unknownModes);
 })();

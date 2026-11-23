@@ -14,9 +14,9 @@ const PRESETS = {
     folder: 'Állománynevelési beavatkozások',     // csak ebből a rétegből (üres = mind)
     fieldHaszn: 'Erdőnevelési beavatkozás',       // ExtendedData mező: fahasználat
     fieldBefejezes: 'Várható befejezés',          // ExtendedData mező: dátum (vagy null)
-    codes: { NFGY: 'növekedésfokozó gyérítés', TKGY: 'törzskiválasztó gyérítés', TI: 'tisztítás',
-             'EÜ': 'egészségügyi termelés', ET: 'egyéb termelés', TRV: 'tarvágás',
-             BO: 'bontás', SZA: 'szerkezetátalakítás' },
+    // a forrás hivatalos kódokat használ (NFGY, TKGY, TI, EÜ, ET, TRV), ezeket nem kell felsorolni;
+    // a BO csak a biztonság kedvéért: a weboldaluk a bontóvágást a szálalóvágástól külön sorolja fel
+    codes: { BO: 'FVB' },
     extra: null                                    // ({folder, d}) => {címke: érték} a felugró ablakba
   },
   egererdo: {
@@ -24,10 +24,8 @@ const PRESETS = {
     folder: '',                                    // rétegenként egy erdészet
     fieldHaszn: 'Fahasználat módja',
     fieldBefejezes: null,
-    codes: { 'Fokozatos felújítóvágás – bontóvágás': 'bontás', 'Növedékfokozó gyérítés': 'növekedésfokozó gyérítés',
-             'Egészségügyi fakitermelés': 'egészségügyi termelés', 'Törzskiválasztó gyérítés': 'törzskiválasztó gyérítés',
-             'Tisztítás': 'tisztítás', 'Tarvágás': 'tarvágás', 'Szálalóvágás': 'szálalóvágás',
-             'Készletgondozó használat': 'készletgondozó használat', 'Egyéb termelés': 'egyéb termelés' },
+    // a hivatalos nevekkel egyezőket (Növedékfokozó gyérítés, Tisztítás, Tarvágás stb.) nem kell felsorolni
+    codes: { 'Fokozatos felújítóvágás – bontóvágás': 'FVB', 'Fokozatos felújítóvágás – végvágás': 'FVV' },
     extra: ({ folder, d }) => {
       const hu = (v, dec) => Number(v).toLocaleString('hu-HU', { minimumFractionDigits: dec, maximumFractionDigits: dec });
       const x = { 'Erdészet': folder };
@@ -41,6 +39,21 @@ const PRESETS = {
   }
 };
 const CONFIG = PRESETS.egererdo;
+
+// Hivatalos (NÉBIH) fakitermelési és haszonvételi kódok → név; a térkép MODES kulcsai (docs/fahasznalati-modok.md)
+const OFFICIAL = { TI: 'Tisztítás', TKGY: 'Törzskiválasztó gyérítés', NFGY: 'Növedékfokozó gyérítés', HGY: 'Haszonvételi gyérítés',
+  'EÜ': 'Egészségügyi fakitermelés', ET: 'Egyéb termelés', KGH: 'Készletgondozó használat', SZV: 'Szálalóvágás',
+  FVB: 'Felújító vágás bontó vágása', FVV: 'Felújító vágás végvágása', TRV: 'Tarvágás',
+  'VÁT': 'Erdőfelújítás érdekében végzett vágástakarítás', 'ÁP': 'Erdősítés érdekében végzett ápolás',
+  'BEFÁP': 'Befejezett ápolás során végzett ápolóvágás', FFK: 'Faanyag felkészítése', 'FGÁ': 'Fekvő gally gyűjtése, nyesés',
+  CSK: 'Cserje kitermelése', TK: 'Tuskó termelése' };
+const EXTRA_KEYS = ['SZA'];   // a térképen használt, de nem hatósági kulcs (szerkezetátalakítás)
+// forrás saját elnevezése → kód: előbb a codes tábla, aztán maga a kód, aztán a hivatalos név (kis/nagybetű nem számít)
+const toCode = (v, codes) => { if (!v) return v; const s = v.trim().replace(/\s+/g, ' '), l = s.toLowerCase();
+  for (const [k, c] of Object.entries(codes)) if (k.toLowerCase() === l) return c;
+  if (OFFICIAL[s.toUpperCase()] || EXTRA_KEYS.includes(s.toUpperCase())) return s.toUpperCase();
+  return Object.keys(OFFICIAL).find(k => OFFICIAL[k].toLowerCase() === l) || s; };
+const isKnown = c => !!OFFICIAL[c] || EXTRA_KEYS.includes(c);
 
 (async () => {
   const enc = pts => { let s = '', pl = 0, pn = 0;
@@ -59,20 +72,19 @@ const CONFIG = PRESETS.egererdo;
   const fname = f => f.getElementsByTagName('name')[0].textContent.trim();
   const folders = [...doc.getElementsByTagName('Folder')].filter(f => !CONFIG.folder || fname(f) === CONFIG.folder);
   const pms = (folders.length ? folders : [doc]).flatMap(f => [...f.getElementsByTagName('Placemark')].map(p => ({ p, folder: f.tagName === 'Folder' ? fname(f) : '' })));
-  const known = new Set(Object.values(CONFIG.codes));
   const rows = pms.filter(({ p }) => p.getElementsByTagName('Polygon').length || p.getElementsByTagName('Point').length).map(({ p, folder }) => {
     const d = Object.fromEntries([...p.getElementsByTagName('Data')].map(e => [e.getAttribute('name'), e.textContent.trim()]));
     const code = d[CONFIG.fieldHaszn] || null;
     const bef = CONFIG.fieldBefejezes ? d[CONFIG.fieldBefejezes] : null;
     const polys = [...p.getElementsByTagName('Polygon')];
     const r = { nev: p.getElementsByTagName('name')[0].textContent.trim().replace(/\s+/g, ' '),
-      haszn: CONFIG.codes[code] || (code ? code.toLowerCase() : code),
+      haszn: toCode(code, CONFIG.codes),
       befejezes: bef ? bef.replace(/[./]/g, '-').replace(/-$/, '') : null,
       g: polys.length ? polys.map(pg => [...pg.getElementsByTagName('outerBoundaryIs'), ...pg.getElementsByTagName('innerBoundaryIs')].map(ring)) : null };
     if (CONFIG.extra) r.x = CONFIG.extra({ folder, d });
     return r;
   });
   copy(JSON.stringify(rows));
-  console.log(`${rows.length} sor a vágólapon (${rows.filter(r => !r.g).length} pont, ezekhez a NÉBIH adja a geometriát). Ismeretlen fahasználati módok:`,
-    [...new Set(rows.map(r => r.haszn).filter(h => !known.has(h)))]);
+  console.log(`${rows.length} sor a vágólapon (${rows.filter(r => !r.g).length} pont, ezekhez a NÉBIH adja a geometriát). Ismeretlen fahasználati módok (a CONFIG.codes-ban kell a hivatalos kódra fordítani):`,
+    [...new Set(rows.map(r => r.haszn).filter(h => !isKnown(h)))]);
 })();
