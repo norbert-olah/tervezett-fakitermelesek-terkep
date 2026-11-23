@@ -147,4 +147,4 @@ A CI ellenőrzi, hogy ne kerüljön be új külső script, stílus vagy betűtí
 
 ## Megjegyzés
 
-A térkép a közzétett adatokat mutatja, a tényleges munkák ettől eltérhetnek (időjárás, módosított tervek). A fahasználati módok leírása tájékoztató jellegű.
+A térkép a közzétett adatokat mutatja, a tényleges munkák ettől eltérhetnek (időjárás, módosított tervek). A fahasználati módok leírása tájékoztató jellegű; a hivatalos nevek, kódok és jogszabályi források a [docs/fahasznalati-modok.md](docs/fahasznalati-modok.md) fogalomtárban vannak.
