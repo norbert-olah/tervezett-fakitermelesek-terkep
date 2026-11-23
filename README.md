@@ -13,6 +13,15 @@ Háttér: a Telex 2026. 11. 23-i cikke szerint minden erdőgazdaság másképp (
 | Budapesti Erdőgazdaság Zrt. | [2026-ban még hátralévő tervezett fakitermelések](https://www.bp-erdo.hu/hu/2026-evben-meg-hatralevo-tervezett-fakitermelesek) | HTML-táblázat (erdőrészlet + fahasználat) | 40 |
 | Vérteserdő Zrt. | [Aktuális tevékenységeink](https://verteserdo.hu/aktualis-tevekenysegeink/) | Google Saját térkép (KML), várható befejezéssel | 98 |
 
+## Importálási napló
+
+Minden új forrásnál vagy frissítésnél ide kerül egy sor (és a `data/<forrás>.js` `importalva` mezője is frissül).
+
+| Importálva | Erdőgazdaság | Forrás közzététele | Letöltve | Részletek | Megjegyzés |
+|---|---|---|---|---|---|
+| 2026-11-23 | Budapesti Erdőgazdaság Zrt. | 2026-11-17 | 2026-11-23 | 40 | első import |
+| 2026-11-23 | Vérteserdő Zrt. | 2026-11-11 | 2026-11-23 | 98 | első import |
+
 A részlethatárokat, a területet, a védettséget, a Natura 2000-es státuszt és a rendeltetést a [NÉBIH Erdőtérkép](https://erdoterkep.nebih.gov.hu/) nyilvános GeoServer WFS-éből (`nebih:KUL_RESZLET_VW`) kértem le. A Vérteserdőnél a saját KML-jük geometriája szerepel. Letöltés: 2026. 11. 23.
 
 Ismert eltérések:
@@ -48,6 +57,7 @@ A NÉBIH WFS-e más oldalról nem hívható (nincs CORS), ezért a lekérés az 
 1. **Csak erdőrészlet-lista van** (mint a BP Erdőnél): nyisd meg az https://erdoterkep.nebih.gov.hu/ oldalt, töltsd ki a `tools/nebih-export.js` `INPUT`-ját, és futtasd a konzolban.
 2. **Saját térkép van (Google My Maps):** a térkép oldalán futtasd a `tools/mymaps-kml-export.js`-t, a kimenetét add meg `ROWS`-ként a `nebih-export.js`-ben, és futtasd az Erdőtérkép oldalán.
 3. A vágólapra került sorokat tedd egy `data/<forras>.js` fájlba (a meglévők mintájára, `ERDO.add({...})`), és vegyél fel hozzá egy `<script src="data/<forras>.js">` sort az `index.html`-be.
+4. Írd be az importálás dátumát a fájl `importalva` mezőjébe és az **Importálási napló** táblázatba.
 
 Új fahasználati mód esetén a `MODES` tömbbe (index.html) kell egy szín és egy rövid leírás.
 
