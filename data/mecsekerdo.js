@@ -8,7 +8,6 @@ ERDO.add({
  "url": "https://mecsekerdo.hu/fenntarthato-gazdalkodas/erdokezelesunk/",
  "powerbi": "https://app.powerbi.com/view?r=eyJrIjoiZWIzNjY3ZGYtYWE0Mi00NTdhLTkxZWYtNzhhNmEyYWY1YWRiIiwidCI6IjlmYzEyMDA3LWM1ZGMtNDgwZC05YTQ0LWZlOGFkZTExY2NkMyIsImMiOjl9",
  "kozzetett": "2026-11-23",
- "lekerve": "2026-11-23",
  "importalva": "2026-11-23",
  "megjegyzes": "Aktuális erdőkezelési munkák (Power BI-jelentés, adatfrissítés: 2026-11-23). Az ütemezett hónapok közül az utolsó szerepel várható befejezésként. Geometria: a Mecsekerdő Power BI-modellje; terület, védettség, Natura 2000: NÉBIH Erdőtérkép WFS.",
  "rows": [

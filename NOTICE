@@ -12,3 +12,13 @@ favicon.svg, favicon.ico, apple-touch-icon.png
   Változtatások: a favicon.svg az eredeti fájl változatlan másolata. A favicon.ico és az
   apple-touch-icon.png raszterizált változat; az apple-touch-icon.png világos (#f6f7f4)
   háttérre, margóval került.
+
+vendor/leaflet-1.9.4/
+  Leaflet 1.9.4 – https://leafletjs.com/ (npm: leaflet@1.9.4, dist/)
+  Copyright (c) 2010-2023, Volodymyr Agafonkin; Copyright (c) 2010-2011, CloudMade
+  Licenc: BSD 2-Clause (vendor/leaflet-1.9.4/LICENSE). Változtatás nélkül.
+
+vendor/source-sans-3/
+  Source Sans 3 (változtatható súlyú, latin és latin-ext) – Adobe
+  npm: @fontsource-variable/source-sans-3@5.3.1
+  Licenc: SIL Open Font License 1.1 (vendor/source-sans-3/OFL.txt). Változtatás nélkül.

@@ -8,7 +8,6 @@ ERDO.add({
  "url": "https://www.google.com/maps/d/viewer?mid=1edFqyqTrWi4-Gdpcgqgje9N7Li-W8Ao",
  "kml": "https://www.google.com/maps/d/kml?mid=1edFqyqTrWi4-Gdpcgqgje9N7Li-W8Ao&forcekml=1",
  "kozzetett": null,
- "lekerve": "2026-11-23",
  "importalva": "2026-11-23",
  "megjegyzes": "Fahasználatok helyei (Google Saját térkép, pontokkal). Geometria, terület, védettség, Natura 2000: NÉBIH Erdőtérkép WFS. Az érintett terület és fatömeg az Egererdő adata.",
  "rows": [

@@ -10,6 +10,11 @@ const html = readFileSync('index.html', 'utf8');
 const readme = readFileSync('README.md', 'utf8');
 
 // 1. index.html ↔ data/ mappa
+// 0. csak saját (repóbeli) scriptek, stílusok és betűtípusok: külső szolgáltatónak ne menjen ki a látogató IP-címe
+for (const [, tag, url] of html.matchAll(/<(script|link)\b[^>]*?\b(?:src|href)="(https?:\/\/[^"]+)"/g))
+  err(`index.html: külső ${tag === 'script' ? 'script' : 'stílus/erőforrás'} (${url}) – tedd a vendor/ mappába`);
+for (const [, url] of html.matchAll(/url\(\s*["']?(https?:\/\/[^"')]+)/g)) err(`index.html: külső CSS-erőforrás (${url})`);
+
 const referenced = [...html.matchAll(/<script src="(data\/[^"]+\.js)"><\/script>/g)].map(m => m[1]);
 const onDisk = readdirSync('data').filter(f => f.endsWith('.js')).map(f => 'data/' + f);
 for (const f of onDisk) if (!referenced.includes(f)) err(`${f} nincs betöltve az index.html-ben`);
@@ -46,13 +51,13 @@ const ids = new Set();
 let total = 0;
 for (const s of ERDO.sources) {
   const P = `${s._file} (${s.id})`;
-  for (const k of ['id', 'nev', 'rovid', 'url', 'lekerve', 'importalva'])
+  for (const k of ['id', 'nev', 'rovid', 'url', 'importalva'])
     if (!s[k]) err(`${P}: hiányzó mező: ${k}`);
   // kozzetett: kötelező mező, de lehet null, ha a forrás nem közöl dátumot (pl. Egererdő)
   if (!('kozzetett' in s)) err(`${P}: hiányzó mező: kozzetett (null, ha a forrás nem közli)`);
   if (ids.has(s.id)) err(`${P}: ismétlődő forrás-azonosító`); ids.add(s.id);
   if (s.url && !/^https:\/\//.test(s.url)) err(`${P}: az url nem https`);
-  for (const k of ['kozzetett', 'lekerve', 'importalva']) if (s[k] && !isDate(s[k])) err(`${P}: ${k} nem ÉÉÉÉ-HH-NN dátum: ${s[k]}`);
+  for (const k of ['kozzetett', 'importalva']) if (s[k] && !isDate(s[k])) err(`${P}: ${k} nem ÉÉÉÉ-HH-NN dátum: ${s[k]}`);
   if (!Array.isArray(s.rows) || !s.rows.length) { err(`${P}: üres vagy hiányzó rows`); continue; }
 
   // README importálási napló: kell egy sor ezzel a dátummal és erdőgazdaság-névvel

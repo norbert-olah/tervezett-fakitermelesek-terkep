@@ -7,7 +7,6 @@ ERDO.add({
  "url": "https://verteserdo.hu/aktualis-tevekenysegeink/",
  "kml": "https://www.google.com/maps/d/kml?mid=1JqAtCPVt-i4SD440GXcEj0c8-QCJssA&forcekml=1",
  "kozzetett": "2026-11-11",
- "lekerve": "2026-11-23",
  "importalva": "2026-11-23",
  "megjegyzes": "Aktuális állománykezelési beavatkozások (Google Saját térkép). Geometria: a Vérteserdő KML-je; terület, védettség: NÉBIH Erdőtérkép WFS. A „Hánta” részletek a NÉBIH-ben „Kisbér-Hánta” néven szerepelnek; „Császár 29 C” a NÉBIH-ben nem található.",
  "rows": [
