@@ -25,6 +25,9 @@ async function run(label, viewport) {
   page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
   // A háttércsempék és a NÉBIH WMS külső szolgáltatás: kiesésük ne buktassa a tesztet.
   await page.route(/arcgisonline\.com|openstreetmap\.org|opentopomap\.org|nebih\.gov\.hu/, r => r.abort());
+  // Minden más külső kérés hiba: az oldalnak a saját fájljain kívül csak a térképcsempékhez szabad kimennie.
+  const external = [];
+  page.on('request', r => { const u = new URL(r.url()); if (!['localhost', '127.0.0.1'].includes(u.hostname) && !/arcgisonline\.com|openstreetmap\.org|opentopomap\.org|nebih\.gov\.hu/.test(u.hostname) && !u.protocol.startsWith('data')) external.push(u.hostname); });
 
   const resp = await page.goto(BASE, { waitUntil: 'load' });
   check(resp && resp.ok(), `index.html betölt (HTTP ${resp && resp.status()})`);
@@ -34,6 +37,8 @@ async function run(label, viewport) {
   check(!pageErrors.length, `nincs JavaScript-kivétel${pageErrors.length ? ': ' + pageErrors.join(' | ') : ''}`);
   check(!appErrors.length, `nincs konzolhiba${appErrors.length ? ': ' + appErrors.join(' | ') : ''}`);
   check(await page.evaluate(() => !!window.L), 'a Leaflet betöltődött');
+  check(!external.length, `nincs kérés más külső szerverre${external.length ? ': ' + [...new Set(external)].join(', ') : ''}`);
+  check(await page.evaluate(async () => { await document.fonts.ready; return [...document.fonts].some(f => f.family.replace(/"/g, '') === 'Source Sans 3' && f.status === 'loaded'); }), 'a Source Sans 3 betűtípus a repóból betöltődött');
   for (const href of await page.$$eval('link[rel~="icon"],link[rel="apple-touch-icon"]', ls => ls.map(l => l.href))) {
     const r = await page.request.get(href);
     check(r.ok(), `az ikon elérhető: ${href.split('/').pop()} (HTTP ${r.status()})`);

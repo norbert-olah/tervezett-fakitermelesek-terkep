@@ -8,10 +8,11 @@
 <link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#1f3d2b">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<!-- Minden script, stílus és betűtípus a repóból töltődik (vendor/), külső szolgáltatót csak a térképcsempék érnek el. -->
+<link rel="stylesheet" href="vendor/leaflet-1.9.4/leaflet.css">
 <style>
+@font-face{font-family:"Source Sans 3";font-style:normal;font-display:swap;font-weight:200 900;src:url(vendor/source-sans-3/source-sans-3-latin-ext-wght-normal.woff2) format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Source Sans 3";font-style:normal;font-display:swap;font-weight:200 900;src:url(vendor/source-sans-3/source-sans-3-latin-wght-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 :root{--bg:#f6f7f4;--panel:#fff;--ink:#1c2620;--muted:#5d6b62;--line:#dfe4df;--deep:#1f3d2b;--deep2:#2c5640}
 *{box-sizing:border-box;min-width:0}
 html,body{height:100%;margin:0}
@@ -60,12 +61,15 @@ header p{margin:0;font-size:13.5px;color:#cfe0d4}
 #srcDlg h2{margin:0;font-size:18px}
 #srcDlg .x{margin-left:auto;background:none;border:0;color:#fff;font-size:26px;line-height:1;cursor:pointer;width:40px;height:40px}
 #srcDlg ul{list-style:none;margin:0;padding:4px 16px 12px}
-#srcDlg li{padding:10px 0;border-bottom:1px solid var(--line)}
+#srcDlg li{padding:8px 0;border-bottom:1px solid var(--line);line-height:1.35}
 #srcDlg li:last-child{border-bottom:0}
-#srcDlg li b{display:block;font-size:15px}
-#srcDlg li a{color:var(--deep2);overflow-wrap:anywhere}
-#srcDlg dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:6px 0 0;font-size:13px}
-#srcDlg dt{color:var(--muted)}#srcDlg dd{margin:0;font-variant-numeric:tabular-nums}
+#srcDlg li b{font-size:15px}
+#srcDlg li a{color:var(--deep2);font-size:13.5px;overflow-wrap:anywhere}
+#srcDlg .meta{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+#srcDlg .meta span{white-space:nowrap}
+#srcDlg .legal{font-size:12.5px;color:var(--muted);padding:10px 16px 14px;margin:0;border-top:1px solid var(--line);background:var(--bg)}
+#srcDlg .legal p{margin:0 0 6px}#srcDlg .legal p:last-child{margin:0}
+#srcDlg .legal a{color:var(--deep2)}
 #srcDlg .note{font-size:12.5px;color:var(--muted);padding:0 16px 14px;margin:0}
 #map{height:100vh;background:#dde3dc}
 .leaflet-popup-content{font:14px/1.4 "Source Sans 3",system-ui,sans-serif;margin:12px 14px;min-width:230px}
@@ -123,11 +127,15 @@ header p{margin:0;font-size:13.5px;color:#cfe0d4}
 <dialog id="srcDlg" aria-labelledby="srcTitle">
  <div class="hd"><h2 id="srcTitle">Adatforrások</h2><button class="x" type="button" aria-label="Bezárás">×</button></div>
  <ul id="srcList"></ul>
- <p class="note">A térkép a közzétett adatokat mutatja; a tényleges munkák ettől eltérhetnek.</p>
+ <div class="legal">
+  <p><b>Nem hivatalos oldal.</b> Tájékoztató jellegű összesítés a fenti forrásokból; az adatok hibásak vagy elavultak lehetnek, a tényleges munkák eltérhetnek. Mértékadó mindig az eredeti forrás. Az oldal használatából eredő károkért felelősséget nem vállalok.</p>
+  <p><b>Adatvédelem:</b> az oldal nem használ sütit és nem gyűjt adatot; csak a választott háttértérképet jegyzi meg a böngésződben. A térképcsempék betöltésekor az IP-címed a csempeszolgáltatóhoz (Esri, ill. a választott OpenStreetMap / OpenTopoMap, NÉBIH) jut, az oldalt a GitHub Pages szolgálja ki.</p>
+  <p>Kód: <a href="https://github.com/norbert-olah/tervezett-fakitermelesek-terkep/blob/main/LICENSE" target="_blank" rel="noopener">MIT licenc</a> · Ikon: Noto Emoji (Google, Apache 2.0) · Térképkönyvtár: Leaflet (BSD-2)</p>
+ </div>
 </dialog>
 <div id="map"></div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="vendor/leaflet-1.9.4/leaflet.js"></script>
 <script>window.ERDO={sources:[],add(s){this.sources.push(s)}};</script>
 <!-- Adatforrások: új forrás = új fájl a data/ mappában + egy sor ide -->
 <script src="data/bp-erdo.js"></script>
@@ -238,10 +246,10 @@ map.on('zoomend moveend',updateLabels);
 $('sources').innerHTML = SRC.map(s=>`<label><input type="checkbox" checked data-s="${esc(s.id)}"><span>${esc(s.nev)}<a href="${esc(s.url)}" target="_blank" rel="noopener">forrás</a></span><span class="n" data-sn="${esc(s.id)}"></span></label>`).join('');
 const usedModes = MODES.filter(m=>F.some(f=>f.haszn===m.k));
 $('legend').innerHTML = usedModes.map((m,i)=>`<label><input type="checkbox" checked data-k="${esc(m.k)}"><span class="sw" style="background:${m.c}80;border-color:${m.c}"></span>${esc(m.k)}<button class="info" type="button" data-d="${i}" aria-label="Mit jelent?">?</button><span class="n" data-mn="${esc(m.k)}"></span></label><div class="desc" id="d${i}">${esc(m.d)}</div>`).join('');
-$('srcList').innerHTML = SRC.map(s=>`<li><b>${esc(s.nev)}</b><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.url)}</a>
- <dl><dt>Közzétéve</dt><dd>${dt(s.kozzetett)}</dd><dt>Letöltve</dt><dd>${dt(s.lekerve)}</dd><dt>Importálva</dt><dd>${dt(s.importalva||s.lekerve)}</dd><dt>Erdőrészletek</dt><dd>${s.rows.length} db</dd></dl></li>`).join('') +
- `<li><b>NÉBIH Erdőtérkép</b><a href="https://erdoterkep.nebih.gov.hu/" target="_blank" rel="noopener">https://erdoterkep.nebih.gov.hu/</a>
- <dl><dt>Szerepe</dt><dd>részlethatárok, terület, védettség, Natura 2000, rendeltetés; élő WMS-réteg</dd></dl></li>`;
+$('srcList').innerHTML = SRC.map(s=>`<li><b>${esc(s.nev)}</b> · <span class="meta">${s.rows.length} erdőrészlet</span><br><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.url)}</a><br>
+ <span class="meta"><span>Közzétéve: ${dt(s.kozzetett)}</span> · <span>Letöltve és importálva: ${dt(s.importalva)}</span></span></li>`).join('') +
+ `<li><b>NÉBIH Erdőtérkép</b><br><a href="https://erdoterkep.nebih.gov.hu/" target="_blank" rel="noopener">https://erdoterkep.nebih.gov.hu/</a><br>
+ <span class="meta">Részlethatárok, terület, védettség, Natura 2000, rendeltetés; élő WMS-réteg</span></li>`;
 const dlg=$('srcDlg');
 $('srcBtn').addEventListener('click',()=>{ if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open',''); });
 dlg.querySelector('.x').addEventListener('click',()=>dlg.close ? dlg.close() : dlg.removeAttribute('open'));

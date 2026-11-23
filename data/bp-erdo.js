@@ -6,7 +6,6 @@ ERDO.add({
  "rovid": "BP Erdő",
  "url": "https://www.bp-erdo.hu/hu/2026-evben-meg-hatralevo-tervezett-fakitermelesek",
  "kozzetett": "2026-11-17",
- "lekerve": "2026-11-23",
  "importalva": "2026-11-23",
  "megjegyzes": "A 2026-ban még hátralévő, a nemzeti park igazgatóságokkal egyeztetett fakitermelések védett erdőrészletekben. Geometria és attribútumok: NÉBIH Erdőtérkép WFS.",
  "rows": [
