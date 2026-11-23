@@ -61,6 +61,35 @@ A NÉBIH WFS-e más oldalról nem hívható (nincs CORS), ezért a lekérés az 
 
 Új fahasználati mód esetén a `MODES` tömbbe (index.html) kell egy szín és egy rövid leírás.
 
+## Ellenőrzés (CI)
+
+Minden pull requestnél és `main`-re pusholásnál lefut a `.github/workflows/ci.yml`, két külön jobbal (mindkettő beállítható kötelező ellenőrzésnek):
+
+- **Adatellenőrzés** (`tools/ci/validate-data.mjs`, függőség nélkül):
+  - minden `data/*.js` be van-e töltve az `index.html`-ben, és fordítva;
+  - lefut-e hiba nélkül a fájl;
+  - megvannak-e a kötelező mezők, és ÉÉÉÉ-HH-NN formájúak-e a dátumok;
+  - szerepel-e minden fahasználati mód a `MODES` tömbben;
+  - érvényes-e a polyline, zártak-e a gyűrűk, és Magyarországon belül vannak-e a koordináták;
+  - van-e sor a forráshoz az **Importálási naplóban**.
+- **Böngészős füstteszt** (`tools/ci/smoke-test.mjs`, Playwright + Chromium): asztali és mobil méretben betölti az oldalt, és ellenőrzi, hogy
+  - nincs-e JavaScript-hiba;
+  - mind az összes erdőrészlet kirajzolódik-e;
+  - működik-e a keresés és a felugró ablak;
+  - látszik-e a névjegy doboz, és teljes-e a Források ablak.
+
+  A háttércsempéket és a NÉBIH-réteget a teszt kikapcsolja, hogy külső szolgáltatás kiesése ne buktassa. A képernyőképek letölthetők a futás artifactjai közül.
+
+Helyben:
+```
+node tools/ci/validate-data.mjs
+npm ci && npx playwright install chromium
+python3 -m http.server 8000 &   # másik terminálban
+node tools/ci/smoke-test.mjs
+```
+
+Az actionök és a Playwright verzióit a Dependabot hetente ellenőrzi (`.github/dependabot.yml`), és frissítéskor PR-t nyit.
+
 ## Megjegyzés
 
 A térkép a közzétett adatokat mutatja, a tényleges munkák ettől eltérhetnek (időjárás, módosított tervek). A fahasználati módok leírása tájékoztató jellegű.

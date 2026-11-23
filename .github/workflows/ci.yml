@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  adatok:
+    name: Adatellenőrzés
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+      - name: data/*.js, README napló, index.html hivatkozások
+        run: node tools/ci/validate-data.mjs
+
+  bongeszo:
+    name: Böngészős füstteszt
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+          cache: npm
+      - name: Playwright + Chromium telepítése
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Statikus szerver indítása
+        run: |
+          python3 -m http.server 8000 >/tmp/server.log 2>&1 &
+          for i in $(seq 1 20); do curl -sf http://localhost:8000/ >/dev/null && break; sleep 0.5; done
+      - name: Füstteszt (asztali + mobil)
+        env:
+          BASE_URL: http://localhost:8000/
+          SCREENSHOT_DIR: screenshots
+        run: |
+          mkdir -p screenshots
+          node tools/ci/smoke-test.mjs
+      - name: Képernyőképek feltöltése
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: kepernyokepek
+          path: screenshots/
+          if-no-files-found: ignore
