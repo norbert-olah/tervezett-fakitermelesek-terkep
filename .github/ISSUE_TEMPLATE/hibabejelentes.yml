@@ -1,0 +1,65 @@
+name: Hiba az oldalon
+description: Valami nem működik, rosszul jelenik meg, vagy nem töltődik be a térképen.
+title: "[Hiba] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Köszönöm a bejelentést! Ha egy erdőrészlet adata tér el a forrástól, azt inkább az **Új vagy megváltozott adat** sablonnal jelezd.
+
+  - type: textarea
+    id: mi-tortent
+    attributes:
+      label: Mi történt?
+      description: Írd le röviden a hibát.
+    validations:
+      required: true
+
+  - type: textarea
+    id: lepesek
+    attributes:
+      label: Hogyan lehet előidézni?
+      description: Mit csináltál közvetlenül a hiba előtt?
+      placeholder: |
+        1. Megnyitottam az oldalt
+        2. Rákerestem erre: …
+        3. Rákattintottam erre: …
+    validations:
+      required: true
+
+  - type: textarea
+    id: elvart
+    attributes:
+      label: Mit vártál volna?
+
+  - type: dropdown
+    id: eszkoz
+    attributes:
+      label: Eszköz
+      options:
+        - Asztali gép / laptop
+        - Mobiltelefon
+        - Tablet
+    validations:
+      required: true
+
+  - type: input
+    id: bongeszo
+    attributes:
+      label: Böngésző
+      placeholder: pl. Chrome 131, Firefox, Safari (iOS 18)
+
+  - type: textarea
+    id: kepernyokep
+    attributes:
+      label: Képernyőkép
+      description: Ha van, húzd ide a képet. Jól jön az is, ha a böngésző konzoljában (F12) piros hibaüzenet látszik.
+
+  - type: checkboxes
+    id: ellenorzes
+    attributes:
+      label: Ellenőrzés
+      options:
+        - label: Újratöltöttem az oldalt (Ctrl+F5, mobilon lehúzással), és a hiba továbbra is fennáll.
+          required: true

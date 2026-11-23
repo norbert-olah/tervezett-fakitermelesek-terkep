@@ -49,8 +49,8 @@ header p{margin:0;font-size:13.5px;color:#cfe0d4}
 .item .m small{display:block;font-size:12px}
 .item .t{font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted);white-space:nowrap}
 .empty{padding:16px 18px;color:var(--muted)}
-#about{flex:none;display:flex;align-items:center;gap:10px;padding:10px 18px;border-top:1px solid var(--line);background:#eef3ee;font-size:13.5px}
-#about a{color:var(--deep);font-weight:600;text-decoration:none;display:flex;align-items:center;gap:8px;min-height:36px}
+#about{flex:none;display:flex;align-items:center;gap:14px;padding:10px 18px;border-top:1px solid var(--line);background:#eef3ee;font-size:13.5px}
+#about a{color:var(--deep);font-weight:600;text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:8px;min-height:36px}
 #about a:hover{text-decoration:underline}
 #about svg{width:18px;height:18px;flex:none}
 #srcBtn{margin-left:auto;font:inherit;font-size:13.5px;font-weight:600;color:#fff;background:var(--deep2);border:0;border-radius:6px;padding:8px 12px;min-height:36px;cursor:pointer}
@@ -90,6 +90,8 @@ header p{margin:0;font-size:13.5px;color:#cfe0d4}
  #side.full{max-height:88vh}
  #toggle{display:block;position:absolute;right:12px;top:10px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:6px;font:inherit;font-size:14px;padding:6px 10px;min-height:36px;cursor:pointer}
  header{padding-right:110px}
+ .leaflet-bottom{bottom:var(--sheet-h,0px)}
+ #about{gap:10px}
 }
 @media(prefers-reduced-motion:reduce){#side{transition:none}}
 </style>
@@ -120,7 +122,8 @@ header p{margin:0;font-size:13.5px;color:#cfe0d4}
   <div id="list"></div>
  </div>
  <div id="about">
-  <a href="https://github.com/norbert-olah/tervezett-fakitermelesek-terkep" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38v-1.34c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.22 1.88.87 2.34.66.07-.52.28-.87.51-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>Projekt a GitHubon</a>
+  <a href="https://github.com/norbert-olah/tervezett-fakitermelesek-terkep" target="_blank" rel="noopener" aria-label="Projekt a GitHubon"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38v-1.34c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.22 1.88.87 2.34.66.07-.52.28-.87.51-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
+  <a id="fbLink" href="https://github.com/norbert-olah/tervezett-fakitermelesek-terkep/issues/new/choose" target="_blank" rel="noopener" title="Hiba bejelentése vagy új adatforrás javaslata"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M2 1.5h12A1.5 1.5 0 0 1 15.5 3v8a1.5 1.5 0 0 1-1.5 1.5H8.6l-3.3 2.6a.5.5 0 0 1-.8-.4v-2.2H2A1.5 1.5 0 0 1 .5 11V3A1.5 1.5 0 0 1 2 1.5zm0 1.5v8h4v1.6L8.1 11H14V3H2zm2.5 2h7v1.5h-7V5zm0 3h5v1.5h-5V8z"/></svg>Visszajelzés</a>
   <button id="srcBtn" type="button" aria-haspopup="dialog">Források</button>
  </div>
 </aside>
@@ -292,6 +295,10 @@ $('q').addEventListener('input',render);
 const side=$('side'), tog=$('toggle');
 $('list').addEventListener('click',e=>{ const b=e.target.closest('.item'); if(!b) return; select(F[+b.dataset.i],true); if(innerWidth<=760){ side.classList.remove('full'); tog.setAttribute('aria-expanded','false'); tog.textContent='Lista ▲'; }});
 tog.addEventListener('click',()=>{ const o=side.classList.toggle('full'); tog.setAttribute('aria-expanded',o); tog.textContent=o?'Térkép ▼':'Lista ▲'; });
+// Mobilon a térkép alsó vezérlői (forrásfelirat, méretarány) a lista fölött legyenek, ne takarják a névjegy dobozt.
+const mq=matchMedia('(max-width:760px)'), sheet=()=>document.documentElement.style.setProperty('--sheet-h',(mq.matches?side.offsetHeight:0)+'px');
+if(window.ResizeObserver) new ResizeObserver(sheet).observe(side); else addEventListener('resize',sheet);
+sheet();
 
 render();
 if(group.getLayers().length) map.fitBounds(group.getBounds(),{padding:[30,30]});

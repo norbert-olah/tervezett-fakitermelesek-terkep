@@ -67,6 +67,10 @@ async function run(label, viewport) {
   // Névjegy doboz látszik, a Források ablak minden forrást felsorol
   const about = await page.locator('#about').boundingBox();
   check(about && about.y >= 0 && about.y + about.height <= viewport.height + 1, 'a névjegy doboz a képernyőn belül van');
+  const fb = await page.locator('#about #fbLink');
+  check(await fb.isVisible() && /\/issues\/new\/choose$/.test(await fb.getAttribute('href')), 'a névjegy dobozban látszik a Visszajelzés link (issue-választó)');
+  const overflow = await page.locator('#about').evaluate(e => e.scrollWidth > e.clientWidth);
+  check(!overflow, 'a névjegy doboz tartalma nem lóg ki vízszintesen');
   await page.click('#srcBtn');
   const srcItems = await page.locator('#srcDlg[open] #srcList li').count();
   check(srcItems === ERDO.sources.length + 1, `a Források ablakban ${ERDO.sources.length} forrás + NÉBIH van (talált: ${srcItems})`);

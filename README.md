@@ -105,7 +105,7 @@ Minden pull requestnél és `main`-re pusholásnál lefut a `.github/workflows/c
   - nincs-e JavaScript-hiba;
   - mind az összes erdőrészlet kirajzolódik-e;
   - működik-e a keresés és a felugró ablak;
-  - látszik-e a névjegy doboz, és teljes-e a Források ablak.
+  - látszik-e a névjegy doboz a Visszajelzés linkkel, és teljes-e a Források ablak.
 
   A háttércsempéket és a NÉBIH-réteget a teszt kikapcsolja, hogy külső szolgáltatás kiesése ne buktassa. A képernyőképek letölthetők a futás artifactjai közül.
 
@@ -118,6 +118,13 @@ node tools/ci/smoke-test.mjs
 ```
 
 Az actionök és a Playwright verzióit a Dependabot hetente ellenőrzi (`.github/dependabot.yml`), és frissítéskor PR-t nyit.
+
+## Közreműködés
+
+Ha tudsz olyan forrásról, ami még nincs a térképen, egy forrás frissült, vagy hibát találtál az oldalon, [nyiss egy issue-t](https://github.com/norbert-olah/tervezett-fakitermelesek-terkep/issues/new/choose) (az oldalon a névjegy doboz **Visszajelzés** linkjével is elérhető):
+
+- **Új vagy megváltozott adat:** új adatforrás, frissült vagy máshová költözött forrás, eltérés a térkép és a forrás között.
+- **Hiba az oldalon:** valami nem működik vagy rosszul jelenik meg.
 
 ## Licenc
 
