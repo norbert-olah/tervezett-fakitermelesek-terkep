@@ -1,0 +1,12 @@
+{
+  "name": "tervezett-fakitermelesek-terkep",
+  "private": true,
+  "description": "CI-eszközök a térképhez (az oldal maga nem igényel buildet)",
+  "scripts": {
+    "check:data": "node tools/ci/validate-data.mjs",
+    "check:browser": "node tools/ci/smoke-test.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.65.1"
+  }
+}

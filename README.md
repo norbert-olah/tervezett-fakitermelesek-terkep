@@ -83,10 +83,12 @@ Minden pull requestnél és `main`-re pusholásnál lefut a `.github/workflows/c
 Helyben:
 ```
 node tools/ci/validate-data.mjs
-npm install --no-save playwright@1.49.1 && npx playwright install chromium
+npm ci && npx playwright install chromium
 python3 -m http.server 8000 &   # másik terminálban
 node tools/ci/smoke-test.mjs
 ```
+
+Az actionök és a Playwright verzióit a Dependabot hetente ellenőrzi (`.github/dependabot.yml`), és frissítéskor PR-t nyit.
 
 ## Megjegyzés
 

@@ -19,10 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: lts/*
       - name: data/*.js, README napló, index.html hivatkozások
         run: node tools/ci/validate-data.mjs
 
@@ -31,13 +31,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: lts/*
+          cache: npm
       - name: Playwright + Chromium telepítése
         run: |
-          npm install --no-save --no-package-lock playwright@1.49.1
+          npm ci
           npx playwright install --with-deps chromium
       - name: Statikus szerver indítása
         run: |
@@ -52,7 +53,7 @@ jobs:
           node tools/ci/smoke-test.mjs
       - name: Képernyőképek feltöltése
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: kepernyokepek
           path: screenshots/
