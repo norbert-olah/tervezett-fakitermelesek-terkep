@@ -42,18 +42,20 @@ A Claude alkalmazás és más, sandboxolt előnézetek nem töltenek be külső 
 
 ```
 index.html                 a térkép (Leaflet 1.9.4, unpkg-ről)
-favicon.svg                ikon (forrás); favicon.ico és apple-touch-icon.png ebből készül
+favicon.svg                ikon (Noto Emoji, Apache 2.0); favicon.ico és apple-touch-icon.png ebből készül
+NOTICE, LICENSES/          harmadik féltől származó elemek licencei
 data/bp-erdo.js            BP Erdő adatai
 data/verteserdo.js         Vérteserdő adatai
 tools/nebih-export.js      konzolscript: erdőrészlet-lista → adatsorok a NÉBIH-ből
 tools/mymaps-kml-export.js konzolscript: Google My Maps → adatsorok (geometriával)
 ```
 
-Az ikon a `favicon.svg`-ből készül, módosítás után így generálható újra (librsvg + ImageMagick):
+Az ikon a Google [Noto Emoji](https://github.com/googlefonts/noto-emoji) készlet „lombhullató fa” (U+1F333) képe, [Apache 2.0](LICENSES/Apache-2.0.txt) licenccel; a részletek a [NOTICE](NOTICE) fájlban. A PNG/ICO változatok így generálhatók újra (librsvg + ImageMagick):
 ```
-rsvg-convert -w 180 -h 180 favicon.svg -o apple-touch-icon.png
 for s in 16 32 48; do rsvg-convert -w $s -h $s favicon.svg -o /tmp/f$s.png; done
 convert /tmp/f16.png /tmp/f32.png /tmp/f48.png favicon.ico
+rsvg-convert -w 140 -h 140 favicon.svg -o /tmp/t140.png
+convert -size 180x180 xc:'#f6f7f4' /tmp/t140.png -gravity center -composite apple-touch-icon.png
 ```
 
 Egy adatsor: `[erdőrészlet, fahasználat, várható befejezés, körzet, terület (ha), tulajdon, rendeltetés, Natura 2000, védettség, NÉBIH RET_ID, geometria]`. A geometria poligononként gyűrűk listája, [Google encoded polyline](https://developers.google.com/maps/documentation/utilities/polylinealgorithm) formában (1e-5 fok ≈ 1 m pontosság).
