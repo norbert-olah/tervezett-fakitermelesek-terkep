@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tervezett fakitermelések térképe</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#f6f7f4;--panel:#fff;--ink:#1c2620;--muted:#5d6b62;--line:#dfe4df;--deep:#1f3d2b;--deep2:#2c5640}
+*{box-sizing:border-box;min-width:0}
+html,body{height:100%;margin:0}
+body{font:15px/1.45 "Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);display:grid;grid-template-columns:370px 1fr;overflow:hidden}
+#side{display:flex;flex-direction:column;height:100vh;background:var(--panel);border-right:1px solid var(--line);z-index:500;overflow:hidden}
+header{background:var(--deep);color:#fff;padding:16px 18px 14px;position:relative}
+header h1{font-size:20px;line-height:1.15;margin:0 0 4px;font-weight:700;text-wrap:balance}
+header p{margin:0;font-size:13.5px;color:#cfe0d4}
+#stats{display:flex;gap:18px;margin-top:10px}
+#stats b{display:block;font-size:22px;line-height:1.1;font-variant-numeric:tabular-nums}
+#stats span{font-size:12.5px;color:#cfe0d4}
+#scroll{flex:1;overflow:auto}
+.sec{padding:10px 18px;border-bottom:1px solid var(--line)}
+.sec h2{font-size:13px;font-weight:700;color:var(--muted);margin:0 0 6px}
+.chk label{display:flex;align-items:center;gap:10px;padding:4px 0;cursor:pointer;font-size:14.5px}
+.chk input{width:18px;height:18px;margin:0;accent-color:var(--deep2);flex:none}
+.sw{width:22px;height:16px;border-radius:3px;flex:none;border:2px solid}
+.chk .n{margin-left:auto;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;font-size:13px;padding-left:8px}
+.chk .info{border:0;background:none;color:var(--muted);cursor:pointer;font-size:13px;padding:2px 4px;text-decoration:underline dotted;flex:none}
+.desc{font-size:13px;color:var(--muted);margin:0 0 6px 32px;display:none}
+.desc.open{display:block}
+.src a{font-size:12.5px;color:var(--deep2);margin-left:4px}
+#q{width:100%;font:inherit;font-size:16px;padding:9px 11px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+#q:focus{outline:2px solid var(--deep2);outline-offset:1px}
+#list{padding:4px 0 12px}
+.org{font-weight:700;font-size:13px;color:#fff;background:var(--deep2);padding:5px 18px;position:sticky;top:0;z-index:2}
+.grp{font-weight:700;font-size:14px;padding:10px 18px 4px;color:var(--deep)}
+.grp small{font-weight:400;color:var(--muted)}
+.item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:none;font:inherit;color:inherit;padding:6px 18px;cursor:pointer;min-height:38px}
+.item:hover,.item:focus-visible{background:#eef3ee;outline:none}
+.item.sel{background:#fff6cf}
+.item .r{font-weight:600;width:52px;flex:none}
+.item .m{flex:1;font-size:13.5px;color:var(--muted);line-height:1.25}
+.item .m small{display:block;font-size:12px}
+.item .t{font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted);white-space:nowrap}
+.empty{padding:16px 18px;color:var(--muted)}
+footer{padding:10px 18px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line)}
+footer a{color:var(--deep2)}
+#map{height:100vh;background:#dde3dc}
+.leaflet-popup-content{font:14px/1.4 "Source Sans 3",system-ui,sans-serif;margin:12px 14px;min-width:230px}
+.pp h3{margin:0 0 2px;font-size:17px}
+.pp .mode{display:inline-flex;align-items:center;gap:6px;font-weight:600;margin:2px 0 8px}
+.pp .mode i{width:12px;height:12px;border-radius:2px;display:inline-block}
+.pp table{border-collapse:collapse;width:100%;font-size:13px}
+.pp td{padding:2px 0;vertical-align:top}
+.pp td:first-child{color:#5d6b62;padding-right:10px;white-space:nowrap}
+.pp .links{margin-top:8px;display:flex;gap:12px;flex-wrap:wrap}
+.lbl{background:rgba(255,255,255,.85);border:0;box-shadow:none;font:600 11.5px "Source Sans 3",sans-serif;padding:0 3px;color:#1c2620}
+.lbl::before{display:none}
+#toggle{display:none}
+@media(max-width:760px){
+ body{grid-template-columns:1fr;grid-template-rows:1fr}
+ #map{height:100vh;grid-row:1;grid-column:1}
+ #side{grid-row:1;grid-column:1;align-self:end;height:auto;max-height:46vh;border-right:0;border-top:1px solid var(--line);box-shadow:0 -4px 16px rgba(0,0,0,.15);transition:max-height .25s;z-index:1000}
+ #side.full{max-height:88vh}
+ #toggle{display:block;position:absolute;right:12px;top:10px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:6px;font:inherit;font-size:14px;padding:6px 10px;min-height:36px;cursor:pointer}
+ header{padding-right:110px}
+}
+@media(prefers-reduced-motion:reduce){#side{transition:none}}
+</style>
+</head>
+<body>
+<aside id="side">
+ <header>
+  <h1>Tervezett fakitermelések térképe</h1>
+  <p>Állami erdőgazdaságok által közzétett fahasználatok, erdőrészletenként</p>
+  <div id="stats"></div>
+  <button id="toggle" type="button" aria-expanded="false">Lista ▲</button>
+ </header>
+ <div id="scroll">
+  <div class="sec">
+   <h2>Erdőgazdaság</h2>
+   <div class="chk src" id="sources"></div>
+  </div>
+  <div class="sec">
+   <h2>Fahasználati mód</h2>
+   <div class="chk" id="legend"></div>
+  </div>
+  <div class="sec chk">
+   <label><input type="checkbox" id="onlyProt">Csak védett természeti területen</label>
+  </div>
+  <div class="sec">
+   <input id="q" type="search" placeholder="Keresés: település vagy részlet, pl. Gánt 5" autocomplete="off" aria-label="Keresés">
+  </div>
+  <div id="list"></div>
+  <footer id="foot"></footer>
+ </div>
+</aside>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>window.ERDO={sources:[],add(s){this.sources.push(s)}};</script>
+<!-- Adatforrások: új forrás = új fájl a data/ mappában + egy sor ide -->
+<script src="data/bp-erdo.js"></script>
+<script src="data/verteserdo.js"></script>
+<script>
+{
+// Fahasználati módok, nagyjából a beavatkozás erőssége szerint sorban
+const MODES = [
+ {k:'tisztítás', c:'#e6b422', d:'Fiatal, még nem gyérítési korú állomány ápolása: a nem kívánt, rossz alakú vagy elnyomó egyedek eltávolítása, az elegyarány szabályozása.'},
+ {k:'törzskiválasztó gyérítés', c:'#7cb342', d:'Fiatal–középkorú állományban a jövőbeli célfák kiválasztása és a velük versengő egyedek kivágása.'},
+ {k:'növekedésfokozó gyérítés', c:'#1e88e5', d:'Idősebb állomány ritkítása, hogy a visszamaradó fák jobban növekedjenek. Az állomány megmarad, csak sűrűsége csökken. (A Vérteserdőnél „növedékfokozó gyérítés”.)'},
+ {k:'egészségügyi termelés', c:'#8d6e63', d:'Beteg, károsodott, kiszáradt vagy balesetveszélyes fák eltávolítása, a kártevők és betegségek terjedésének megelőzésére.'},
+ {k:'egyéb termelés', c:'#8e24aa', d:'A fenti kategóriákba nem sorolt fakitermelés, pl. utakat, épületeket veszélyeztető fák eltávolítása. A Vérteserdő szerint ide tartozik az idegenhonos állományok fokozatos, tarvágás nélküli átalakítása is.'},
+ {k:'bontás', c:'#f57c00', d:'A fokozatos felújító vágás része: az idős állomány megbontása, hogy az újulat fényhez jusson. Az idős fák egy része már ilyenkor kikerül.'},
+ {k:'szerkezetátalakítás', c:'#e53935', d:'Az állomány fafaj- vagy szerkezeti összetételének átalakítása (pl. nem őshonos fafajok lecserélése). Gyakran erős, az állományt nagyrészt lecserélő beavatkozás.'},
+ {k:'tarvágás', c:'#7f1d1d', d:'Véghasználat: az állomány egy ütemben történő kitermelése, utána a terület mesterséges erdősítéssel újul fel.'}
+];
+const modeOf = k => MODES.find(m => m.k === k) || {k, c:'#607d8b', d:''};
+
+function decode(s){ const pts=[]; let i=0,lat=0,lng=0;
+ while(i<s.length){ const v=[0,0];
+  for(let j=0;j<2;j++){ let r=0,sh=0,b; do{ b=s.charCodeAt(i++)-63; r|=(b&31)<<sh; sh+=5; }while(b>=32); v[j]=(r&1)?~(r>>1):(r>>1); }
+  lat+=v[0]; lng+=v[1]; pts.push([lat/1e5,lng/1e5]); }
+ return pts; }
+
+const SRC = window.ERDO.sources;
+const F = [];
+SRC.forEach(s=>s.rows.forEach(a=>{
+ const [nev,haszn,befejezes,korzet,ter,tulf,rend,natura,vedett,ret_id,g]=a;
+ const m = nev.match(/^(.+) (\d+) ?([A-ZÁÉÍÓÖŐÚÜŰ0-9 ]+)$/);
+ F.push({idx:F.length,src:s,nev,haszn,befejezes,korzet,ter,tulf,rend,natura,vedett,ret_id,
+  hely:m?m[1]:nev,tag:m?+m[2]:0,res:m?m[3].trim():'',latlngs:g.map(poly=>poly.map(decode))});
+}));
+
+const map = L.map('map',{zoomControl:true}).setView([47.5,18.3],9);
+const base = {
+ 'Térkép (Esri Topo)': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'© Esri, HERE, Garmin, © OpenStreetMap közreműködők'}),
+ 'OpenStreetMap': L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap közreműködők'}),
+ 'Domborzat (OpenTopoMap)': L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{maxZoom:17,attribution:'© OpenStreetMap közreműködők, SRTM | © OpenTopoMap (CC-BY-SA)'}),
+ 'Műhold (Esri)': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'© Esri, Maxar, Earthstar Geographics'})
+};
+let baseName = 'Térkép (Esri Topo)';
+try{ const s=localStorage.getItem('erdo-base'); if(s && base[s]) baseName=s; }catch(e){}
+base[baseName].addTo(map);
+const nebih = L.tileLayer.wms('https://erdoterkep.nebih.gov.hu/geoserver/nebih/wms',{layers:'KUL_RESZLET_VW',format:'image/png',transparent:true,version:'1.1.1',minZoom:12,maxZoom:20,opacity:.8,attribution:'Erdőrészletek: NÉBIH Erdőtérkép'});
+const labels = L.layerGroup();
+L.control.layers(base,{'Összes erdőrészlet határa (NÉBIH)':nebih,'Részletjelek':labels},{collapsed:true}).addTo(map);
+L.control.scale({imperial:false}).addTo(map);
+map.on('baselayerchange',e=>{ try{localStorage.setItem('erdo-base',e.name)}catch(_){} });
+
+const activeModes = new Set(MODES.map(m=>m.k));
+const activeSrc = new Set(SRC.map(s=>s.id));
+const style = f => { const c=modeOf(f.haszn).c; return {color:c,weight:2,fillColor:c,fillOpacity:.45}; };
+const fmt = n => n==null ? '–' : n.toLocaleString('hu-HU',{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc = s => String(s??'–').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dt = s => s ? s.replace(/-/g,'. ')+'.' : '';
+const sum = a => a.reduce((s,f)=>s+(f.ter||0),0);
+let selected = null;
+
+function popupHtml(f){ const m=modeOf(f.haszn); const c=f.layer.getBounds().getCenter();
+ const la=c.lat.toFixed(5), lo=c.lng.toFixed(5);
+ return `<div class="pp"><h3>${esc(f.hely)} ${f.tag}/${esc(f.res)}</h3>
+ <div class="mode"><i style="background:${m.c}"></i>${esc(f.haszn)}</div>
+ <table>
+ <tr><td>Erdőgazdaság</td><td>${esc(f.src.nev)}</td></tr>
+ ${f.befejezes?`<tr><td>Várható befejezés</td><td>${dt(f.befejezes)}</td></tr>`:''}
+ <tr><td>Terület</td><td>${fmt(f.ter)} ha</td></tr>
+ <tr><td>Erdőtervezési körzet</td><td>${esc(f.korzet)}</td></tr>
+ <tr><td>Rendeltetés</td><td>${esc(f.rend)}</td></tr>
+ <tr><td>Védettség</td><td>${esc(f.vedett)}</td></tr>
+ <tr><td>Natura 2000</td><td>${esc(f.natura)}</td></tr>
+ <tr><td>Tulajdon</td><td>${esc(f.tulf)}</td></tr>
+ </table>
+ <div class="links"><a href="${esc(f.src.url)}" target="_blank" rel="noopener">Forrás</a><a href="https://www.google.com/maps?q=${la},${lo}" target="_blank" rel="noopener">Google Térkép</a><a href="https://www.openstreetmap.org/?mlat=${la}&mlon=${lo}#map=16/${la}/${lo}" target="_blank" rel="noopener">OSM</a></div></div>`; }
+
+const group = L.featureGroup().addTo(map);
+F.forEach(f=>{
+ f.layer = L.polygon(f.latlngs, style(f));
+ f.layer.bindPopup(()=>popupHtml(f),{maxWidth:330});
+ f.layer.bindTooltip(`${f.hely} ${f.tag}/${f.res} – ${f.haszn}`,{sticky:true});
+ f.layer.on('mouseover',()=>f.layer.setStyle({weight:4,fillOpacity:.6}));
+ f.layer.on('mouseout',()=>f.layer.setStyle(Object.assign(style(f), selected===f?{weight:4,color:'#111'}:{})));
+ f.layer.on('click',()=>select(f,false));
+ f.label = L.tooltip({permanent:true,direction:'center',className:'lbl'}).setContent(`${f.tag}/${f.res}`).setLatLng(f.layer.getBounds().getCenter());
+});
+labels.addTo(map);
+
+function select(f,zoom){
+ if(selected && selected!==f) selected.layer.setStyle(style(selected));
+ selected=f; f.layer.setStyle({weight:4,color:'#111'}); f.layer.bringToFront();
+ if(zoom){ map.fitBounds(f.layer.getBounds(),{maxZoom:16,padding:[40,40]}); f.layer.openPopup(f.layer.getBounds().getCenter()); }
+ document.querySelectorAll('.item').forEach(b=>b.classList.toggle('sel',+b.dataset.i===f.idx));
+ const el=document.querySelector(`.item[data-i="${f.idx}"]`); if(el && !zoom) el.scrollIntoView({block:'nearest'});
+}
+map.on('popupclose',()=>{ if(selected){ selected.layer.setStyle(style(selected)); selected=null; document.querySelectorAll('.item.sel').forEach(b=>b.classList.remove('sel')); }});
+
+const $ = id => document.getElementById(id);
+function baseFilter(f){ const q=$('q').value.trim().toLowerCase().replace(/\s+/g,' ');
+ return activeSrc.has(f.src.id) && (!$('onlyProt').checked || /^Védett/.test(f.vedett||'')) &&
+  (!q || `${f.hely} ${f.tag} ${f.res} ${f.hely} ${f.tag}/${f.res} ${f.haszn}`.toLowerCase().includes(q)); }
+const visible = () => F.filter(f=>baseFilter(f) && activeModes.has(f.haszn));
+
+function updateLabels(){ labels.clearLayers(); if(map.getZoom()<14) return; const b=map.getBounds();
+ visible().forEach(f=>{ if(b.intersects(f.layer.getBounds())) labels.addLayer(f.label); }); }
+map.on('zoomend moveend',updateLabels);
+
+// Szűrők felépítése
+$('sources').innerHTML = SRC.map(s=>`<label><input type="checkbox" checked data-s="${esc(s.id)}"><span>${esc(s.nev)}<a href="${esc(s.url)}" target="_blank" rel="noopener">forrás</a></span><span class="n" data-sn="${esc(s.id)}"></span></label>`).join('');
+const usedModes = MODES.filter(m=>F.some(f=>f.haszn===m.k));
+$('legend').innerHTML = usedModes.map((m,i)=>`<label><input type="checkbox" checked data-k="${esc(m.k)}"><span class="sw" style="background:${m.c}80;border-color:${m.c}"></span>${esc(m.k)}<button class="info" type="button" data-d="${i}" aria-label="Mit jelent?">?</button><span class="n" data-mn="${esc(m.k)}"></span></label><div class="desc" id="d${i}">${esc(m.d)}</div>`).join('');
+$('foot').innerHTML = 'Források: ' + SRC.map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.rovid)}</a> (közzétéve: ${dt(s.kozzetett)}, letöltve: ${dt(s.lekerve)})`).join(', ') +
+ '. Területi és védettségi adatok: <a href="https://erdoterkep.nebih.gov.hu/" target="_blank" rel="noopener">NÉBIH Erdőtérkép</a>.';
+
+function render(){
+ const vis=visible(); const visSet=new Set(vis);
+ F.forEach(f=>{ const on=visSet.has(f); if(on && !group.hasLayer(f.layer)) group.addLayer(f.layer); if(!on && group.hasLayer(f.layer)) group.removeLayer(f.layer); });
+ $('stats').innerHTML=`<div><b>${vis.length}</b><span>erdőrészlet</span></div><div><b>${fmt(sum(vis))}</b><span>hektár</span></div><div><b>${new Set(vis.map(f=>f.hely)).size}</b><span>település</span></div>`;
+ // számlálók: a mód-számláló a többi szűrőt figyelembe veszi
+ const bf=F.filter(baseFilter);
+ usedModes.forEach(m=>{ const fs=bf.filter(f=>f.haszn===m.k); document.querySelector(`[data-mn="${m.k}"]`).textContent=`${fs.length} db · ${fmt(sum(fs))} ha`; });
+ SRC.forEach(s=>{ const fs=F.filter(f=>f.src===s); document.querySelector(`[data-sn="${s.id}"]`).textContent=`${fs.length} db`; });
+ let html='';
+ SRC.filter(s=>activeSrc.has(s.id)).forEach(s=>{
+  const sv=vis.filter(f=>f.src===s); if(!sv.length) return;
+  html+=`<div class="org">${esc(s.rovid)} · ${sv.length} részlet</div>`;
+  const byTown={}; sv.forEach(f=>(byTown[f.hely]=byTown[f.hely]||[]).push(f));
+  html+=Object.keys(byTown).sort((a,b)=>a.localeCompare(b,'hu')).map(t=>{
+   const it=byTown[t].sort((a,b)=>a.tag-b.tag||a.res.localeCompare(b.res,'hu'));
+   return `<div class="grp">${esc(t)} <small>· ${it.length} részlet, ${fmt(sum(it))} ha</small></div>`+
+    it.map(f=>`<button class="item${selected===f?' sel':''}" type="button" data-i="${f.idx}"><span class="sw" style="background:${modeOf(f.haszn).c}80;border-color:${modeOf(f.haszn).c}"></span><span class="r">${f.tag}/${esc(f.res)}</span><span class="m">${esc(f.haszn)}${f.befejezes?`<small>befejezés: ${dt(f.befejezes)}</small>`:''}</span><span class="t">${fmt(f.ter)} ha</span></button>`).join('');
+  }).join('');
+ });
+ $('list').innerHTML = html || '<div class="empty">Nincs a szűrésnek megfelelő erdőrészlet.</div>';
+ updateLabels();
+}
+
+$('legend').addEventListener('change',e=>{ const k=e.target.dataset.k; if(!k) return; e.target.checked?activeModes.add(k):activeModes.delete(k); render(); });
+$('legend').addEventListener('click',e=>{ const b=e.target.closest('.info'); if(!b) return; e.preventDefault(); $('d'+b.dataset.d).classList.toggle('open'); });
+$('sources').addEventListener('change',e=>{ const s=e.target.dataset.s; if(!s) return; e.target.checked?activeSrc.add(s):activeSrc.delete(s); render(); if(group.getLayers().length) map.fitBounds(group.getBounds(),{padding:[30,30]}); });
+$('onlyProt').addEventListener('change',render);
+$('q').addEventListener('input',render);
+const side=$('side'), tog=$('toggle');
+$('list').addEventListener('click',e=>{ const b=e.target.closest('.item'); if(!b) return; select(F[+b.dataset.i],true); if(innerWidth<=760){ side.classList.remove('full'); tog.setAttribute('aria-expanded','false'); tog.textContent='Lista ▲'; }});
+tog.addEventListener('click',()=>{ const o=side.classList.toggle('full'); tog.setAttribute('aria-expanded',o); tog.textContent=o?'Térkép ▼':'Lista ▲'; });
+
+render();
+if(group.getLayers().length) map.fitBounds(group.getBounds(),{padding:[30,30]});
+}
+</script>
+</body>
+</html>
