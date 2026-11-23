@@ -17,7 +17,7 @@ Dunaszentmiklós 12 E | növekedésfokozó gyérítés
 Lábatlan 19 B | bontás
 `;
 // a forrás saját elnevezése → hivatalos kód (az INPUT-hoz; indoklás: docs/fahasznalati-modok.md, „Leképezés”)
-const CODES = { 'növekedésfokozó gyérítés': 'NFGY', 'bontás': 'FVB', 'szerkezetátalakítás': 'SZA' };   // BP Erdő
+const CODES = { 'növekedésfokozó gyérítés': 'NFGY', 'bontás': 'BIZ-BONT', 'szerkezetátalakítás': 'BIZ-SZA' };   // BP Erdő
 const ROWS = null;            // pl. ROWS = [ ...a mymaps-kml-export.js / powerbi-export.js kimenete... ]
 const ALIAS = { 'HÁNTA': 'KISBÉR-HÁNTA' };   // ha a forrás más településnevet használ, mint a NÉBIH
 
@@ -29,7 +29,7 @@ const OFFICIAL = { TI: 'Tisztítás', TKGY: 'Törzskiválasztó gyérítés', NF
   'VÁT': 'Erdőfelújítás érdekében végzett vágástakarítás', 'ÁP': 'Erdősítés érdekében végzett ápolás',
   'BEFÁP': 'Befejezett ápolás során végzett ápolóvágás', FFK: 'Faanyag felkészítése', 'FGÁ': 'Fekvő gally gyűjtése, nyesés',
   CSK: 'Cserje kitermelése', TK: 'Tuskó termelése' };
-const EXTRA_KEYS = ['SZA'];   // a térképen használt, de nem hatósági kulcs (szerkezetátalakítás)
+const EXTRA_KEYS = ['BIZ-BONT', 'BIZ-SZA'];   // bizonytalan besorolás: a térképen használt, nem hatósági kulcsok
 // forrás saját elnevezése → kód: előbb a codes tábla, aztán maga a kód, aztán a hivatalos név (kis/nagybetű nem számít)
 const toCode = (v, codes) => { if (!v) return v; const s = v.trim().replace(/\s+/g, ' '), l = s.toLowerCase();
   for (const [k, c] of Object.entries(codes)) if (k.toLowerCase() === l) return c;

@@ -21,8 +21,9 @@ for (const f of onDisk) if (!referenced.includes(f)) err(`${f} nincs betöltve a
 for (const f of referenced) if (!onDisk.includes(f)) err(`az index.html olyan fájlt tölt be, ami nincs meg: ${f}`);
 
 // 2. ismert fahasználati módok (hivatalos kódok) az index.html MODES tömbjéből
-const modes = new Set([...html.matchAll(/\{k:'([^']+)', n:'[^']+', c:'#[0-9a-f]{6}'/gi)].map(m => m[1]));
+const modes = new Set([...html.matchAll(/\{k:'([^']+)', n:'[^']+',(?: b:1,)? c:'#[0-9a-f]{6}'/gi)].map(m => m[1]));
 if (!modes.size) err('nem találom a MODES tömböt az index.html-ben');
+for (const [, k] of html.matchAll(/\{k:'([^']+)', n:'[^']+', b:1,/g)) if (!k.startsWith('BIZ-')) err(`MODES: a bizonytalan besorolású mód kulcsa BIZ- kezdetű legyen: ${k}`);
 
 // 3. adatfájlok betöltése ugyanúgy, ahogy a böngésző teszi
 const ERDO = { sources: [], add(s) { this.sources.push(s); } };

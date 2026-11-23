@@ -81,11 +81,22 @@ A NÉBIH előírása szerint a bejelentésben a jogszabályban szereplő módoka
 
 A BP Erdő „szerkezetátalakítás” megnevezése nem szerepel a NÉBIH fakitermelési kódlistájában. Az **Evt. 55. §** szerint az erdőszerkezet-átalakítás egy tevékenység, amely a meglévő erdő természetességi állapotán változtat; „nem tartozik a rendes erdőgazdálkodás körébe” (55. § (2)). Egy erdészeti támogatási rendelet szerint egyik formája a [tarvágást követő, fafajcserés szerkezetátalakítás](https://njt.jog.gov.hu/jogszabaly/2009-139-20-82) (139/2009. FVM rendelet, fogalommeghatározások 14. pont és 3. §), és a 45/2015. FM rendelet fakitermelés-tervezési alapelvei is a tarvágás kivételes eseteként említi a fafajcserével járó erdőszerkezet-átalakítást. Ugyanakkor a Vérteserdő a saját magyarázata szerint az idegenhonos állományok fokozatos, a véghasználat körébe nem tartozó átalakítását egyéb termelésként (ET) közli. A mögötte álló fakitermelés hatósági kódja így lehet TRV, FVB/FVV vagy ET is; a nyilvános adatokból nem állapítható meg (l. a leképezésnél).
 
-Ezért a térkép ezt a módot saját, **nem hatósági** `SZA` kulccsal mutatja, nem sorolja egyik hivatalos kódhoz sem.
+Ezért a térkép ezt a módot a *bizonytalan besorolású* módok között, saját, nem hatósági `BIZ-SZA` kulccsal mutatja (l. alább).
+
+## Bizonytalan besorolás
+
+Ha egy forrás elnevezése nem feleltethető meg egyértelműen egy hatósági kódnak, a térkép nem találgat, hanem a „Bizonytalan besorolás” csoportban, saját, `BIZ-` kezdetű kulccsal mutatja. A leírás megadja a szóba jövő hatósági kódokat. Ha a forrás később megadja a kódot (vagy írásos forrás kerül elő), a leképezés átírandó a hatósági kódra, és a `BIZ-` mód kivezethető, ha már nem használja egyik forrás sem.
+
+| Kulcs | Név a térképen | Szóba jövő hatósági kód | Forrás |
+|---|---|---|---|
+| `BIZ-BONT` | bontás (bontóvágás vagy szálalóvágás) | FVB (valószínű), SZV | BP Erdő; Vérteserdő `BO` (felkészülésként) |
+| `BIZ-SZA` | szerkezetátalakítás | TRV, FVB/FVV, ET | BP Erdő; Vérteserdő `SZA` (felkészülésként) |
+
+A források saját magyarázatainak átnézése, és a bizonytalan esetek tisztázása: #20.
 
 ## Leképezés: a források elnevezései → hivatalos kód
 
-A térkép (`MODES` az `index.html`-ben) és az adatfájlok (`data/*.js`, a sor 2. eleme) a hivatalos NÉBIH-kódot használják; a megjelenített név külön mező. A forrásonkénti fordítás az importszkriptekben van: `tools/nebih-export.js` (`CODES`, a BP Erdő listájához), `tools/mymaps-kml-export.js` (presetenként `codes`), `tools/powerbi-export.js` (`codes`). A szkriptek a hivatalos kódot és a hivatalos nevet (kis- és nagybetűtől függetlenül) maguktól felismerik, ezért a táblában csak az ettől eltérő elnevezéseket kell felsorolni; minden mást ismeretlenként jeleznek, és a CI ellenőrzése is elbukik rajta.
+A térkép (`MODES` az `index.html`-ben) és az adatfájlok (`data/*.js`, a sor 2. eleme) a hivatalos NÉBIH-kódot használják; a megjelenített név külön mező. Kivétel a bizonytalan besorolás (l. alább). A forrásonkénti fordítás az importszkriptekben van: `tools/nebih-export.js` (`CODES`, a BP Erdő listájához), `tools/mymaps-kml-export.js` (presetenként `codes`), `tools/powerbi-export.js` (`codes`). A szkriptek a hivatalos kódot és a hivatalos nevet (kis- és nagybetűtől függetlenül) maguktól felismerik, ezért a táblában csak az ettől eltérő elnevezéseket kell felsorolni; minden mást ismeretlenként jeleznek, és a CI ellenőrzése is elbukik rajta.
 
 A rendszerben minden NÉBIH fakitermelési és haszonvételi kód szerepel (a kódlista fent), akkor is, ha a jelenlegi adatokban nem fordul elő. A térkép jelmagyarázatában csak az adatokban ténylegesen előforduló módok jelennek meg.
 
@@ -97,11 +108,11 @@ Az „Előfordulás” oszlop a 2026. 11. 23-i importok részletszáma; a „–
 | BP Erdő | törzskiválasztó gyérítés | TKGY | 1 | a hivatalos név |
 | BP Erdő | növekedésfokozó gyérítés | NFGY | 23 | szinonima, l. 1. |
 | BP Erdő | egyéb termelés | ET | 11 | a hivatalos név |
-| BP Erdő | bontás | FVB | 2 | értelmezés, l. 2. |
-| BP Erdő | szerkezetátalakítás | `SZA` (nem hatósági) | 2 | nincs hatósági megfelelője, l. 3. |
+| BP Erdő | bontás | `BIZ-BONT` (bizonytalan) | 2 | valószínűleg FVB, l. 2. |
+| BP Erdő | szerkezetátalakítás | `BIZ-SZA` (bizonytalan) | 2 | a fakitermelés módja nem ismert, l. 3. |
 | Vérteserdő | TI, TKGY, NFGY, EÜ, ET, TRV | ugyanaz | 9, 38, 32, 11, 6, 2 | NÉBIH-kódok; a weboldaluk magyarázó szövegei a hivatalos neveket használják („Növedékfokozó gyérítés”, „Egészségügyi fakitermelés”) |
-| Vérteserdő | BO | FVB | – | feltételezett: a weboldaluk a „Bontóvágás”-t a „Szálalóvágás”-tól külön sorolja fel; az eddigi importokban nem fordult elő, l. 2. |
-| Vérteserdő | SZA | `SZA` (nem hatósági) | – | feltételezett; az eddigi importokban nem fordult elő, l. 3. |
+| Vérteserdő | BO | `BIZ-BONT` (bizonytalan) | – | feltételezett; az eddigi importokban nem fordult elő. A weboldaluk a „Bontóvágás”-t a „Szálalóvágás”-tól külön sorolja fel, ezért valószínűleg FVB, l. 2. |
+| Vérteserdő | SZA | `BIZ-SZA` (bizonytalan) | – | feltételezett; az eddigi importokban nem fordult elő, l. 3. |
 | Vérteserdő | más NÉBIH-kód (pl. FVB, FVV, SZV) | ugyanaz | – | a weboldaluk a végvágást és a szálalóvágást is felsorolja |
 | Mecsekerdő | TI, TKGY, NFGY, EÜ, ET, KGH, SZV, FVB, FVV, TRV | ugyanaz | 53, 47, 30, 2, 8, 13, 6, 28, 13, 6 | a Power BI-modell `D_Hmod` táblája a NÉBIH-kódokat és -neveket használja; KGH: l. 4. |
 | Mecsekerdő | HGY, VÁT, ÁP, BEFÁP, FFK, FGÁ, CSK, TK | ugyanaz | – | a modellben szerepelnek, az ütemezésben most nem |
@@ -115,14 +126,12 @@ Az „Előfordulás” oszlop a 2026. 11. 23-i importok részletszáma; a „–
 ### Indoklás
 
 1. **„növekedésfokozó” = NFGY.** A Vhr. 46. § (4) és a NÉBIH kódlistája csak a *növedékfokozó gyérítés* nevet ismeri, „növekedésfokozó” gyérítés nincs a jogszabályokban. A BP Erdő listájában más NFGY-jellegű mód nem szerepel, a négy forrás közül csak ők használják ezt a szót. Szinonimaként kezeljük; a térkép a hivatalos nevet mutatja.
-2. **„bontás” (BP Erdő), `BO` (Vérteserdő) = FVB.** „Bontó vágás” néven a NÉBIH kódlistája csak a fokozatos felújítóvágás bontóvágását (FVB) jelöli; a szálalóvágásnak a bejelentésben nincs külön bontó kódja, ott minden lépés SZV. A két BP Erdő-részlet (Lábatlan 19 B, Tardos 8 D) a NÉBIH Erdőtérkép szerint vágásos üzemmódú (`UZEMMOD = VÁG`, lekérdezve: 2026. 11. 24.). Ez nem zárja ki teljesen a szálalóvágást (a Mecsekerdő vágásos üzemmódú részletekben is tervez SZV-t), ezért ez értelmezés, nem a forrás kimondott adata. Ha a BP Erdő megadja a hatósági kódot, ez a sor felülírandó.
-3. **„szerkezetátalakítás” = nem hatósági `SZA`.** A két részlet (Neszmély 22 C és 22 G) a NÉBIH Erdőtérkép szerint erdeifenyves, kultúrerdő, vágásos üzemmódban (lekérdezve: 2026. 11. 24.). Ez összhangban van egy idegenhonos állomány lecserélésével, de a fakitermelés módját (TRV, FVB/FVV vagy ET, l. fent) a nyilvános adatok nem mutatják: a NÉBIH Erdőtérkép nyilvános rétegében tervezett fakitermelés nincs. A Vérteserdő `SZA` kódja egyik importban sem fordult elő (a 2026. 11. 23-i és 24-i KML-ben csak NFGY, TKGY, TI, EÜ, ET és TRV van); a szkriptben csak felkészülésként szerepel.
+2. **„bontás” (BP Erdő), `BO` (Vérteserdő) → `BIZ-BONT`, valószínűleg FVB.** „Bontó vágás” néven a NÉBIH kódlistája csak a fokozatos felújítóvágás bontóvágását (FVB) jelöli; a szálalóvágásnak a bejelentésben nincs külön bontó kódja, ott minden lépés SZV. A két BP Erdő-részlet (Lábatlan 19 B, Tardos 8 D) a NÉBIH Erdőtérkép szerint vágásos üzemmódú (`UZEMMOD = VÁG`, lekérdezve: 2026. 11. 24.). Ez nem zárja ki teljesen a szálalóvágást (a Mecsekerdő vágásos üzemmódú részletekben is tervez SZV-t), ezért a térkép bizonytalan besorolásként mutatja. Ha a forrás megadja a hatósági kódot, a sor átírandó.
+3. **„szerkezetátalakítás” → `BIZ-SZA`.** A két részlet (Neszmély 22 C és 22 G) a NÉBIH Erdőtérkép szerint erdeifenyves, kultúrerdő, vágásos üzemmódban (lekérdezve: 2026. 11. 24.). Ez összhangban van egy idegenhonos állomány lecserélésével, de a fakitermelés módját (TRV, FVB/FVV vagy ET, l. fent) a nyilvános adatok nem mutatják: a NÉBIH Erdőtérkép nyilvános rétegében tervezett fakitermelés nincs. A Vérteserdő `SZA` kódja egyik importban sem fordult elő (a 2026. 11. 23-i és 24-i KML-ben csak NFGY, TKGY, TI, EÜ, ET és TRV van); a szkriptben csak felkészülésként szerepel.
 4. **KGH a mai jelentésében.** Mindkét forrás 2026-os adatot közöl, és a 2017. december 29. óta hatályos jelentést használja (a korábbi „szálalás”): a Mecsekerdő mind a 13 KGH-részlete „Örökerdő (szálaló)” üzemmódú, és a nevét is „KGH – Készletgondozó használat (szálalás)” alakban adja; az Egererdő egyetlen KGH-részlete (Cserépváralja 11 A) a NÉBIH szerint `SZÁL` üzemmódú (lekérdezve: 2026. 11. 24.). A régi értelemben vett készletgondozó használat (ma HGY) egyik forrásban sem szerepel. A „KH” és a „szálalás” egyik forrásban sem fordul elő.
 5. **HF, FELK (Mecsekerdő).** Nem szerepelnek a NÉBIH 2018-as és 2019-es kódlistájában. A jelentésüket a Mecsekerdő modelljéből kell kiolvasni, mielőtt hivatalos kódhoz rendelnénk őket.
 
 ## Nyitott kérdések
 
-- „Szerkezetátalakítás” (BP Erdő): a mögötte álló hatósági fakitermelési kód. Csak a forrástól (vagy a NÉBIH-től) kérdezhető meg.
-- „Bontás” (BP Erdő): megerősíteni, hogy FVB és nem SZV.
-- HF és FELK (Mecsekerdő): a jelentésük.
+- „Szerkezetátalakítás” és „bontás” (BP Erdő), HF és FELK (Mecsekerdő): a források saját magyarázatainak átnézése, írásos megerősítés – #20.
 - Csoportosítás és színek – #11. Eddigi döntés: a szálalóvágás a véghasználatok közé kerül, nem a folyamatos erdőborítás csoportba. A most felvett, az adatokban nem szereplő kódok színe ideiglenes.
