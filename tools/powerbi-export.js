@@ -15,10 +15,25 @@
 const CONFIG = {
   url: 'https://app.powerbi.com/view?r=eyJrIjoiZWIzNjY3ZGYtYWE0Mi00NTdhLTkxZWYtNzhhNmEyYWY1YWRiIiwidCI6IjlmYzEyMDA3LWM1ZGMtNDgwZC05YTQ0LWZlOGFkZTExY2NkMyIsImMiOjl9',
   api: 'https://wabi-west-europe-e-primary-api.analysis.windows.net/public/reports/',   // a jelentés hálózati kéréseiben látszik
-  // használati mód kódja (D_Hmod[Használati mód]) → a térkép MODES kulcsa
-  codes: { 'EÜ': 'egészségügyi termelés', TI: 'tisztítás', TKGY: 'törzskiválasztó gyérítés', NFGY: 'növekedésfokozó gyérítés',
-           TRV: 'tarvágás', FVB: 'bontás', FVV: 'végvágás', SZV: 'szálalóvágás', KGH: 'készletgondozó használat', ET: 'egyéb termelés' }
+  // használati mód kódja (D_Hmod[Használati mód]) → hivatalos kód. A Mecsekerdő a NÉBIH-kódokat használja, ezeket nem
+  // kell felsorolni; a modellben szereplő HF és FELK nem NÉBIH-kód, a jelentésük tisztázandó (docs/fahasznalati-modok.md).
+  codes: {}
 };
+// Hivatalos (NÉBIH) fakitermelési és haszonvételi kódok → név; a térkép MODES kulcsai (docs/fahasznalati-modok.md)
+const OFFICIAL = { TI: 'Tisztítás', TKGY: 'Törzskiválasztó gyérítés', NFGY: 'Növedékfokozó gyérítés', HGY: 'Haszonvételi gyérítés',
+  'EÜ': 'Egészségügyi fakitermelés', ET: 'Egyéb termelés', KGH: 'Készletgondozó használat', SZV: 'Szálalóvágás',
+  FVB: 'Felújító vágás bontó vágása', FVV: 'Felújító vágás végvágása', TRV: 'Tarvágás',
+  'VÁT': 'Erdőfelújítás érdekében végzett vágástakarítás', 'ÁP': 'Erdősítés érdekében végzett ápolás',
+  'BEFÁP': 'Befejezett ápolás során végzett ápolóvágás', FFK: 'Faanyag felkészítése', 'FGÁ': 'Fekvő gally gyűjtése, nyesés',
+  CSK: 'Cserje kitermelése', TK: 'Tuskó termelése' };
+const EXTRA_KEYS = ['BIZ-BONT', 'BIZ-SZA'];   // bizonytalan besorolás: a térképen használt, nem hatósági kulcsok
+// forrás saját elnevezése → kód: előbb a codes tábla, aztán maga a kód, aztán a hivatalos név (kis/nagybetű nem számít)
+const toCode = (v, codes) => { if (!v) return v; const s = v.trim().replace(/\s+/g, ' '), l = s.toLowerCase();
+  for (const [k, c] of Object.entries(codes)) if (k.toLowerCase() === l) return c;
+  if (OFFICIAL[s.toUpperCase()] || EXTRA_KEYS.includes(s.toUpperCase())) return s.toUpperCase();
+  return Object.keys(OFFICIAL).find(k => OFFICIAL[k].toLowerCase() === l) || s; };
+const isKnown = c => !!OFFICIAL[c] || EXTRA_KEYS.includes(c);
+
 
 (async () => {
   const KEY = JSON.parse(atob(new URL(CONFIG.url).searchParams.get('r'))).k;
@@ -81,9 +96,10 @@ const CONFIG = {
   const rows = Object.values(by).map(({ a, h, all, m }) => {
     const d = D[a], code = HM[h][1], ms = [...m].sort(), last = ms[ms.length - 1];
     const years = [...new Set(ms.map(x => Math.floor(x / 100)))];
-    if (!CONFIG.codes[code]) unknown.add(`${code} (${HM[h][2]})`);
+    const kod = toCode(code, CONFIG.codes);
+    if (!isKnown(kod)) unknown.add(`${code} (${HM[h][2]})`);
     if (!G[a]) noGeom.push(d[1]);
-    return { nev: d[1].replace(/\s+/g, ' ').trim(), haszn: CONFIG.codes[code] || HM[h][2].toLowerCase(),
+    return { nev: d[1].replace(/\s+/g, ' ').trim(), haszn: kod,
       befejezes: `${Math.floor(last / 100)}-${String(last % 100).padStart(2, '0')}`,
       x: Object.fromEntries(Object.entries({ 'Erdészet': d[2],
            'Ütemezett hónapok': years.map(y => `${y}: ` + ms.filter(x => Math.floor(x / 100) === y).map(x => HU[x % 100 - 1]).join(', ')).join('; '),
@@ -92,5 +108,5 @@ const CONFIG = {
   });
   copy(JSON.stringify(rows));
   console.log(`${rows.length} sor a vágólapon. Modell frissítve: ${model.LastRefreshTime}.`,
-    unknown.size ? 'Ismeretlen használati módok:' : '', [...unknown], noGeom.length ? 'Geometria nélkül:' : '', noGeom);
+    unknown.size ? 'Ismeretlen használati módok (a CONFIG.codes-ban kell a hivatalos kódra fordítani):' : '', [...unknown], noGeom.length ? 'Geometria nélkül:' : '', noGeom);
 })();

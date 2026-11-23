@@ -74,7 +74,7 @@ rsvg-convert -w 140 -h 140 favicon.svg -o /tmp/t140.png
 convert -size 180x180 xc:'#f6f7f4' /tmp/t140.png -gravity center -composite apple-touch-icon.png
 ```
 
-Egy adatsor: `[erdőrészlet, fahasználat, várható befejezés, körzet, terület (ha), tulajdon, rendeltetés, Natura 2000, védettség, NÉBIH RET_ID, geometria, extra]`. Az utolsó, opcionális `extra` elem a forrás saját adatai `{címke: érték}` formában. A várható befejezés `ÉÉÉÉ-HH-NN` vagy (ha a forrás csak hónapot ad) `ÉÉÉÉ-HH`. A geometria poligononként gyűrűk listája, [Google encoded polyline](https://developers.google.com/maps/documentation/utilities/polylinealgorithm) formában (1e-5 fok ≈ 1 m pontosság).
+Egy adatsor: `[erdőrészlet, fahasználati mód, várható befejezés, körzet, terület (ha), tulajdon, rendeltetés, Natura 2000, védettség, NÉBIH RET_ID, geometria, extra]`. A fahasználati mód a hivatalos (NÉBIH) kód, pl. `NFGY`; a forrásonkénti elnevezések leképezése a [fogalomtárban](docs/fahasznalati-modok.md#leképezés-a-források-elnevezései--hivatalos-kód) van. Az utolsó, opcionális `extra` elem a forrás saját adatai `{címke: érték}` formában. A várható befejezés `ÉÉÉÉ-HH-NN` vagy (ha a forrás csak hónapot ad) `ÉÉÉÉ-HH`. A geometria poligononként gyűrűk listája, [Google encoded polyline](https://developers.google.com/maps/documentation/utilities/polylinealgorithm) formában (1e-5 fok ≈ 1 m pontosság).
 
 ## Új forrás vagy frissítés
 
@@ -87,7 +87,7 @@ A NÉBIH WFS-e más oldalról nem hívható (nincs CORS), ezért a lekérés az 
 5. Írd be az importálás dátumát a fájl `importalva` mezőjébe és az **Importálási napló** táblázatba.
 6. Vesd össze a forrás saját védettségi és Natura 2000-adatait (ha közli) a NÉBIH-ével, és az eltéréseket írd az **Ismert eltérések** közé.
 
-Új fahasználati mód esetén a `MODES` tömbbe (index.html) kell egy szín és egy rövid leírás, a forrás saját elnevezését pedig a szkript `codes` táblájában kell a `MODES` kulcsára fordítani. A szkriptek kiírják, ha ismeretlen módot találnak.
+A szkriptek a hivatalos kódot és nevet maguktól felismerik. Ha egy forrás ettől eltérő elnevezést használ, azt a szkript `codes` (a `nebih-export.js`-ben `CODES`) táblájában kell a hivatalos kódra fordítani, és felvenni a [fogalomtár](docs/fahasznalati-modok.md) leképezési táblázatába, indoklással. A `MODES` tömb (index.html) minden NÉBIH-kódot tartalmaz; a jelmagyarázatban csak az adatokban előforduló módok jelennek meg. A szkriptek kiírják, ha ismeretlen módot találnak.
 
 ## Ellenőrzés (CI)
 
@@ -98,7 +98,7 @@ Minden pull requestnél és `main`-re pusholásnál lefut a `.github/workflows/c
   - lefut-e hiba nélkül a fájl;
   - megvannak-e a kötelező mezők (a `kozzetett` lehet `null`, ha a forrás nem közöl dátumot), és ÉÉÉÉ-HH-NN formájúak-e a dátumok (a várható befejezés lehet ÉÉÉÉ-HH is);
   - 11 elemű-e a sor, vagy 12 elemű, ha az utolsó egy `{címke: szöveg}` extra objektum;
-  - szerepel-e minden fahasználati mód a `MODES` tömbben;
+  - szerepel-e minden fahasználati mód (hivatalos kód) a `MODES` tömbben;
   - érvényes-e a polyline, zártak-e a gyűrűk, és Magyarországon belül vannak-e a koordináták;
   - van-e sor a forráshoz az **Importálási naplóban**.
 - **Böngészős füstteszt** (`tools/ci/smoke-test.mjs`, Playwright + Chromium): asztali és mobil méretben betölti az oldalt, és ellenőrzi, hogy
