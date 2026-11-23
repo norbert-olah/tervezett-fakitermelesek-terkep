@@ -39,14 +39,17 @@ const decode = s => { const pts = []; let i = 0, lat = 0, lng = 0;
     lat += v[0]; lng += v[1]; pts.push([lat / 1e5, lng / 1e5]); }
   return pts; };
 const isDate = s => /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(Date.parse(s));
+const isMonth = s => /^\d{4}-(0[1-9]|1[0-2])$/.test(s);   // ha a forrás csak hónapot ad (pl. Mecsekerdő ütemezése)
 const HU = { latMin: 45.7, latMax: 48.6, lngMin: 16.1, lngMax: 22.9 };   // Magyarország befoglaló téglalapja
 
 const ids = new Set();
 let total = 0;
 for (const s of ERDO.sources) {
   const P = `${s._file} (${s.id})`;
-  for (const k of ['id', 'nev', 'rovid', 'url', 'kozzetett', 'lekerve', 'importalva'])
+  for (const k of ['id', 'nev', 'rovid', 'url', 'lekerve', 'importalva'])
     if (!s[k]) err(`${P}: hiányzó mező: ${k}`);
+  // kozzetett: kötelező mező, de lehet null, ha a forrás nem közöl dátumot (pl. Egererdő)
+  if (!('kozzetett' in s)) err(`${P}: hiányzó mező: kozzetett (null, ha a forrás nem közli)`);
   if (ids.has(s.id)) err(`${P}: ismétlődő forrás-azonosító`); ids.add(s.id);
   if (s.url && !/^https:\/\//.test(s.url)) err(`${P}: az url nem https`);
   for (const k of ['kozzetett', 'lekerve', 'importalva']) if (s[k] && !isDate(s[k])) err(`${P}: ${k} nem ÉÉÉÉ-HH-NN dátum: ${s[k]}`);
@@ -59,12 +62,14 @@ for (const s of ERDO.sources) {
   const names = new Set();
   s.rows.forEach((r, i) => {
     const R = `${P} #${i + 1}${Array.isArray(r) && r[0] ? ` „${r[0]}”` : ''}`;
-    if (!Array.isArray(r) || r.length !== 11) { err(`${R}: 11 elemű tömböt várok`); return; }
-    const [nev, haszn, bef, , ter, , , , , , g] = r;
+    if (!Array.isArray(r) || (r.length !== 11 && r.length !== 12)) { err(`${R}: 11 (vagy extra mezővel 12) elemű tömböt várok`); return; }
+    const [nev, haszn, bef, , ter, , , , , , g, x] = r;
+    if (r.length === 12 && !(x && typeof x === 'object' && !Array.isArray(x) && Object.values(x).every(v => typeof v === 'string')))
+      err(`${R}: a 12. (extra) elem {címke: szöveg} objektum legyen`);
     if (typeof nev !== 'string' || !/^.+ \d+ ?[A-ZÁÉÍÓÖŐÚÜŰ0-9 ]+$/.test(nev)) err(`${R}: az erdőrészlet neve nem „Település tag részlet” formájú`);
     if (names.has(nev)) warn(`${R}: ismétlődő erdőrészlet a forráson belül`); names.add(nev);
     if (!modes.has(haszn)) err(`${R}: ismeretlen fahasználati mód: „${haszn}” (vedd fel a MODES tömbbe)`);
-    if (bef !== null && !isDate(bef)) err(`${R}: a várható befejezés nem ÉÉÉÉ-HH-NN: ${bef}`);
+    if (bef !== null && !isDate(bef) && !isMonth(bef)) err(`${R}: a várható befejezés nem ÉÉÉÉ-HH-NN vagy ÉÉÉÉ-HH: ${bef}`);
     if (ter !== null && !(typeof ter === 'number' && ter > 0 && ter < 1000)) err(`${R}: gyanús terület: ${ter}`);
     if (ter === null) warn(`${R}: nincs NÉBIH-adat (terület, védettség)`);
     if (!Array.isArray(g) || !g.length) { err(`${R}: hiányzó geometria`); return; }
