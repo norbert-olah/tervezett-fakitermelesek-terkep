@@ -1,0 +1,80 @@
+name: Új vagy megváltozott adat
+description: Új adatforrás, frissült forrás, vagy eltérés a térkép és a forrás között.
+title: "[Adat] "
+labels: ["adatforrás"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Köszönöm, hogy segítesz bővíteni a térképet! Csak **nyilvánosan elérhető** forrást adj meg (honlap, közzétett térkép, dokumentum), személyes adat ne kerüljön ide.
+
+  - type: dropdown
+    id: tipus
+    attributes:
+      label: Miről van szó?
+      options:
+        - Új forrás (még nem szerepel a térképen)
+        - Egy meglévő forrás frissült vagy máshová költözött
+        - Eltérés a térkép és a forrás között (pl. hiányzó vagy rossz erdőrészlet)
+    validations:
+      required: true
+
+  - type: input
+    id: erdogazdasag
+    attributes:
+      label: Erdőgazdaság vagy közzétevő
+      placeholder: pl. Pilisi Parkerdő Zrt.
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: A forrás linkje
+      description: Az az oldal, ahol az adatok elérhetők.
+      placeholder: https://…
+    validations:
+      required: true
+
+  - type: dropdown
+    id: formatum
+    attributes:
+      label: Milyen formában közlik?
+      options:
+        - HTML-táblázat vagy lista a honlapon
+        - Google Saját térkép (My Maps)
+        - Egyéb interaktív térkép (pl. Power BI, ArcGIS)
+        - PDF
+        - Excel / CSV
+        - Egyéb / nem tudom
+    validations:
+      required: true
+
+  - type: input
+    id: kozzetetel
+    attributes:
+      label: Közzététel vagy utolsó frissítés dátuma
+      description: Ha a forráson szerepel.
+      placeholder: ÉÉÉÉ-HH-NN
+
+  - type: textarea
+    id: reszletek
+    attributes:
+      label: Érintett erdőrészletek
+      description: Eltérés esetén sorold fel, melyik részletekről van szó, és mi a különbség.
+      placeholder: |
+        pl. Császár 29 C – a forrás szerint tarvágás, a térképen nincs rajta
+
+  - type: textarea
+    id: megjegyzes
+    attributes:
+      label: Megjegyzés
+      description: Bármi, ami segít az importálásban (hol található az oldalon, kell-e hozzá kattintani, mióta van fent stb.).
+
+  - type: checkboxes
+    id: ellenorzes
+    attributes:
+      label: Ellenőrzés
+      options:
+        - label: Megnéztem az oldal Források ablakát és a nyitott issue-kat, és ez még nem szerepel ott.
+          required: true

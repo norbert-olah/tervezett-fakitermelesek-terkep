@@ -100,6 +100,13 @@ node tools/ci/smoke-test.mjs
 
 Az actionök és a Playwright verzióit a Dependabot hetente ellenőrzi (`.github/dependabot.yml`), és frissítéskor PR-t nyit.
 
+## Közreműködés
+
+Ha tudsz olyan forrásról, ami még nincs a térképen, egy forrás frissült, vagy hibát találtál az oldalon, [nyiss egy issue-t](https://github.com/norbert-olah/tervezett-fakitermelesek-terkep/issues/new/choose):
+
+- **Új vagy megváltozott adat:** új adatforrás, frissült vagy máshová költözött forrás, eltérés a térkép és a forrás között.
+- **Hiba az oldalon:** valami nem működik vagy rosszul jelenik meg.
+
 ## Megjegyzés
 
 A térkép a közzétett adatokat mutatja, a tényleges munkák ettől eltérhetnek (időjárás, módosított tervek). A fahasználati módok leírása tájékoztató jellegű.
