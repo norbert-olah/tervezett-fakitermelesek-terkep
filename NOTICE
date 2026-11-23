@@ -1,0 +1,14 @@
+Tervezett fakitermelések térképe
+https://github.com/norbert-olah/tervezett-fakitermelesek-terkep
+
+Harmadik féltől származó elemek
+-------------------------------
+
+favicon.svg, favicon.ico, apple-touch-icon.png
+  Forrás: Noto Emoji, U+1F333 „lombhullató fa”
+  https://github.com/googlefonts/noto-emoji (2D/svg/emoji_u1f333.svg, 99701e0 commit, 2026-10-26)
+  Copyright 2013 Google, Inc. All Rights Reserved.
+  Licenc: Apache License, Version 2.0 (LICENSES/Apache-2.0.txt)
+  Változtatások: a favicon.svg az eredeti fájl változatlan másolata. A favicon.ico és az
+  apple-touch-icon.png raszterizált változat; az apple-touch-icon.png világos (#f6f7f4)
+  háttérre, margóval került.
