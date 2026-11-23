@@ -1,5 +1,7 @@
 # Tervezett fakitermelések térképe
 
+**Élő oldal: https://norbert-olah.github.io/tervezett-fakitermelesek-terkep/**
+
 Személyes használatra készült térkép, amely egy felületen mutatja az állami erdőgazdaságok által közzétett (tervezett vagy folyamatban lévő) fakitermeléseket, erdőrészletenként, fahasználati módonként színezve.
 
 Háttér: a Telex 2026. 11. 23-i cikke szerint minden erdőgazdaság másképp (vagy egyáltalán nem) teszi közzé, hol vágnak védett erdőben.
