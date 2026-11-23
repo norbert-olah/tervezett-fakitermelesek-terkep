@@ -34,6 +34,10 @@ async function run(label, viewport) {
   check(!pageErrors.length, `nincs JavaScript-kivétel${pageErrors.length ? ': ' + pageErrors.join(' | ') : ''}`);
   check(!appErrors.length, `nincs konzolhiba${appErrors.length ? ': ' + appErrors.join(' | ') : ''}`);
   check(await page.evaluate(() => !!window.L), 'a Leaflet betöltődött');
+  for (const href of await page.$$eval('link[rel~="icon"],link[rel="apple-touch-icon"]', ls => ls.map(l => l.href))) {
+    const r = await page.request.get(href);
+    check(r.ok(), `az ikon elérhető: ${href.split('/').pop()} (HTTP ${r.status()})`);
+  }
 
   const polys = await page.locator('path.leaflet-interactive').count();
   check(polys === expected, `mind a ${expected} erdőrészlet poligonja kirajzolódott (talált: ${polys})`);
