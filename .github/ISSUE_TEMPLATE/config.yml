@@ -1,0 +1,4 @@
+# Üres issue-t csak írási joggal rendelkezők (Write, Maintain, Admin) nyithatnak,
+# nekik a sablonválasztóban „Maintainers only” jelöléssel megjelenik.
+# Mindenki más csak a két sablonból választhat.
+blank_issues_enabled: false
