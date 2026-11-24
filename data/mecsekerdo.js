@@ -1,6 +1,6 @@
 // Sorok: [erdőrészlet, fahasználati mód kódja (docs/fahasznalati-modok.md), várható befejezés, körzet, terület (ha), tulajdon, rendeltetés, Natura 2000, védettség, NÉBIH RET_ID, geometria, extra]
 // Geometria: poligononként gyűrűk, Google encoded polyline (1e-5 fok) formában.
-// Extra: a forrás saját, a NÉBIH-ben nem szereplő adatai (címke → érték), a felugró ablakban jelennek meg.
+// Extra: a forrás saját, a NÉBIH-ben nem szereplő adatai (címke → érték), a felugró ablakban jelennek meg; a „Fahasználat a forrás szerint” csak akkor, ha eltér a hivatalos kódtól és névtől.
 ERDO.add({
  "id": "mecsekerdo",
  "nev": "Mecsekerdő Zrt.",

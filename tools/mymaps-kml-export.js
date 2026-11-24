@@ -54,6 +54,10 @@ const toCode = (v, codes) => { if (!v) return v; const s = v.trim().replace(/\s+
   if (OFFICIAL[s.toUpperCase()] || EXTRA_KEYS.includes(s.toUpperCase())) return s.toUpperCase();
   return Object.keys(OFFICIAL).find(k => OFFICIAL[k].toLowerCase() === l) || s; };
 const isKnown = c => !!OFFICIAL[c] || EXTRA_KEYS.includes(c);
+// ha a forrás elnevezése eltér a hivatalos kódtól és névtől, a felugró ablakban is megjelenik („Fahasználat a forrás szerint”)
+const sourceName = (v, code) => { if (!v) return null; const s = v.trim().replace(/\s+/g, ' ');
+  return s.toUpperCase() === code || (OFFICIAL[code] || '').toLowerCase() === s.toLowerCase() ? null : s; };
+const withSource = (x, v, code) => { const s = sourceName(v, code); return s ? { 'Fahasználat a forrás szerint': s, ...(x || {}) } : x; };
 
 (async () => {
   const enc = pts => { let s = '', pl = 0, pn = 0;
@@ -82,6 +86,7 @@ const isKnown = c => !!OFFICIAL[c] || EXTRA_KEYS.includes(c);
       befejezes: bef ? bef.replace(/[./]/g, '-').replace(/-$/, '') : null,
       g: polys.length ? polys.map(pg => [...pg.getElementsByTagName('outerBoundaryIs'), ...pg.getElementsByTagName('innerBoundaryIs')].map(ring)) : null };
     if (CONFIG.extra) r.x = CONFIG.extra({ folder, d });
+    r.x = withSource(r.x, code, r.haszn);
     return r;
   });
   copy(JSON.stringify(rows));
