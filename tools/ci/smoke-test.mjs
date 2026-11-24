@@ -89,6 +89,7 @@ async function run(label, viewport) {
   const dlgBox = await page.locator('#glsDlg').boundingBox();
   check(dlgBox && dlgBox.x >= 0 && dlgBox.x + dlgBox.width <= viewport.width + 1 && dlgBox.y >= 0 && dlgBox.y + dlgBox.height <= viewport.height + 1, 'a Fogalomtár ablak a képernyőn belül van');
   check(!(await page.locator('#glsDlg').evaluate(e => e.scrollWidth > e.clientWidth)), 'a Fogalomtár tartalma nem lóg ki vízszintesen');
+  check(await page.locator('#glsDlg').evaluate(e => e.scrollHeight <= e.clientHeight + 1), 'a Fogalomtár ablak maga nem görget, csak a törzse (a görgetősáv nem lóg át a fejlécen és a sarkokon)');
   await page.keyboard.press('Escape');
   // „bővebben” egy mód ? dobozából: a Fogalomtár az adott módnál nyílik meg
   await page.locator('#legend .fold').first().click();
