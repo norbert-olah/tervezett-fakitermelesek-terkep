@@ -8,6 +8,7 @@ ERDO.add({
  "kml": "https://www.google.com/maps/d/kml?mid=1JqAtCPVt-i4SD440GXcEj0c8-QCJssA&forcekml=1",
  "kozzetett": "2026-11-11",
  "importalva": "2026-11-23",
+ "modleirasok": {"ET": "01ef51ca", "EÜ": "6681d78c", "NFGY": "57a32bda", "TI": "f67270bd", "TKGY": "bedff69e", "TRV": "b90161e5"},
  "megjegyzes": "Aktuális állománykezelési beavatkozások (Google Saját térkép). Geometria: a Vérteserdő KML-je; terület, védettség: NÉBIH Erdőtérkép WFS. A „Hánta” részletek a NÉBIH-ben „Kisbér-Hánta” néven szerepelnek; „Császár 29 C” a NÉBIH-ben nem található.",
  "rows": [
 ["Oroszlány 51 A","NFGY","2026-11-06","Gerecse-Vértesi körzet",2.99,"Állami tulajdon","Faanyagtermelő","Része a hálózatnak","Nem védett terület",82734652,[["wos`H}ivnBHj@NfAhAHd@IxFk@nBM`Hi@fEg@B?McA]mEm@jA_AbAe@~@iA@yBFeAOc@MiBV{@Bu@f@kDPkBV"]]],

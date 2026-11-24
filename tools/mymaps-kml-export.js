@@ -5,6 +5,9 @@
 //  2. F12 → Console, másold be ezt a scriptet, válaszd ki a CONFIG-ot, Enter.
 //  3. Az eredmény (JSON tömb) a vágólapra kerül → ezt add meg ROWS-ként
 //     a nebih-export.js-ben (az erdoterkep.nebih.gov.hu oldalon).
+//  4. A konzol kiírja a forrás módonkénti magyarázó szövegeinek ujjlenyomatát is. Ha a PREV-be bemásolod a
+//     data/<forrás>.js „modleirasok” mezőjét, a szkript jelzi, melyik mód magyarázata változott: ilyenkor nézd át
+//     újra, és frissítsd a docs/fahasznalati-modok.md „A források saját magyarázatai” fejezetét és a modleirasok mezőt.
 // Poligonos térképnél a geometriát a My Maps KML-jéből veszi; pontos térképnél (pl. Egererdő)
 // g: null lesz, és a nebih-export.js a NÉBIH részlethatárát teszi be.
 
@@ -14,6 +17,7 @@ const PRESETS = {
     folder: 'Állománynevelési beavatkozások',     // csak ebből a rétegből (üres = mind)
     fieldHaszn: 'Erdőnevelési beavatkozás',       // ExtendedData mező: fahasználat
     fieldBefejezes: 'Várható befejezés',          // ExtendedData mező: dátum (vagy null)
+    fieldLeiras: 'Állománynevelés leírása',       // ExtendedData mező: a forrás magyarázata a módhoz (vagy null)
     // a forrás hivatalos kódokat használ (NFGY, TKGY, TI, EÜ, ET, TRV), ezeket nem kell felsorolni;
     // BO, SZA: felkészülésként, az eddigi importokban nem fordultak elő (bizonytalan besorolás)
     codes: { BO: 'BIZ-BONT', SZA: 'BIZ-SZA' },
@@ -24,6 +28,7 @@ const PRESETS = {
     folder: '',                                    // rétegenként egy erdészet
     fieldHaszn: 'Fahasználat módja',
     fieldBefejezes: null,
+    fieldLeiras: 'A beavatkozás célja',
     // a hivatalos nevekkel egyezőket (Növedékfokozó gyérítés, Tisztítás, Tarvágás stb.) nem kell felsorolni
     codes: { 'Fokozatos felújítóvágás – bontóvágás': 'FVB', 'Fokozatos felújítóvágás – végvágás': 'FVV' },
     extra: ({ folder, d }) => {
@@ -39,6 +44,7 @@ const PRESETS = {
   }
 };
 const CONFIG = PRESETS.egererdo;
+const PREV = null;   // pl. a data/egererdo.js „modleirasok” mezője: { FVB: '5c5d044b', … }
 
 // Hivatalos (NÉBIH) fakitermelési és haszonvételi kódok → név; a térkép MODES kulcsai (docs/fahasznalati-modok.md)
 const OFFICIAL = { TI: 'Tisztítás', TKGY: 'Törzskiválasztó gyérítés', NFGY: 'Növedékfokozó gyérítés', HGY: 'Haszonvételi gyérítés',
@@ -89,7 +95,17 @@ const withSource = (x, v, code) => { const s = sourceName(v, code); return s ? {
     r.x = withSource(r.x, code, r.haszn);
     return r;
   });
+  // a forrás módonkénti magyarázatainak ujjlenyomata (FNV-1a, szóközök egységesítve); módonként több is lehet
+  const fnv = s => { let h = 0x811c9dc5; for (const ch of new TextEncoder().encode(s)) { h ^= ch; h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(16).padStart(8, '0'); };
+  const lei = {};
+  if (CONFIG.fieldLeiras) for (const { p } of pms) {
+    const d = Object.fromEntries([...p.getElementsByTagName('Data')].map(e => [e.getAttribute('name'), e.textContent.replace(/\s+/g, ' ').trim()]));
+    if (d[CONFIG.fieldHaszn] && d[CONFIG.fieldLeiras]) (lei[toCode(d[CONFIG.fieldHaszn], CONFIG.codes)] ||= new Set()).add(fnv(d[CONFIG.fieldLeiras])); }
+  const modleirasok = Object.fromEntries(Object.entries(lei).sort().map(([k, v]) => [k, [...v].sort().join(',')]));
   copy(JSON.stringify(rows));
   console.log(`${rows.length} sor a vágólapon (${rows.filter(r => !r.g).length} pont, ezekhez a NÉBIH adja a geometriát). Ismeretlen fahasználati módok (a CONFIG.codes-ban kell a hivatalos kódra fordítani):`,
     [...new Set(rows.map(r => r.haszn).filter(h => !isKnown(h)))]);
+  console.log('Módleírások ujjlenyomata (data/<forrás>.js → modleirasok):', JSON.stringify(modleirasok));
+  if (PREV) { const ch = [...new Set([...Object.keys(PREV), ...Object.keys(modleirasok)])].filter(k => PREV[k] !== modleirasok[k]);
+    console.log(ch.length ? 'Megváltozott vagy új/eltűnt módmagyarázat, nézd át:' : 'A módmagyarázatok nem változtak.', ch); }
 })();

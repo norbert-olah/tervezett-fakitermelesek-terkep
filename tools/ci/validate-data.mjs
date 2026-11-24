@@ -66,6 +66,10 @@ for (const s of ERDO.sources) {
   if (ids.has(s.id)) err(`${P}: ismétlődő forrás-azonosító`); ids.add(s.id);
   if (s.url && !/^https:\/\//.test(s.url)) err(`${P}: az url nem https`);
   for (const k of ['kozzetett', 'importalva']) if (s[k] && !isDate(s[k])) err(`${P}: ${k} nem ÉÉÉÉ-HH-NN dátum: ${s[k]}`);
+  if (s.modleirasok != null) for (const [k, v] of Object.entries(s.modleirasok)) {
+    if (!modes.has(k)) err(`${P}: modleirasok: ismeretlen mód: ${k}`);
+    if (!/^[0-9a-f]{8}(,[0-9a-f]{8})*$/.test(v)) err(`${P}: modleirasok.${k}: 8 jegyű hexa ujjlenyomat(ok) vesszővel elválasztva`);
+  }
   if (!Array.isArray(s.rows) || !s.rows.length) { err(`${P}: üres vagy hiányzó rows`); continue; }
 
   // README importálási napló: kell egy sor ezzel a dátummal és erdőgazdaság-névvel
