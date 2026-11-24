@@ -33,6 +33,10 @@ const toCode = (v, codes) => { if (!v) return v; const s = v.trim().replace(/\s+
   if (OFFICIAL[s.toUpperCase()] || EXTRA_KEYS.includes(s.toUpperCase())) return s.toUpperCase();
   return Object.keys(OFFICIAL).find(k => OFFICIAL[k].toLowerCase() === l) || s; };
 const isKnown = c => !!OFFICIAL[c] || EXTRA_KEYS.includes(c);
+// ha a forrás elnevezése eltér a hivatalos kódtól és névtől, a felugró ablakban is megjelenik („Fahasználat a forrás szerint”)
+const sourceName = (v, code) => { if (!v) return null; const s = v.trim().replace(/\s+/g, ' ');
+  return s.toUpperCase() === code || (OFFICIAL[code] || '').toLowerCase() === s.toLowerCase() ? null : s; };
+const withSource = (x, v, code) => { const s = sourceName(v, code); return s ? { 'Fahasználat a forrás szerint': s, ...(x || {}) } : x; };
 
 
 (async () => {
@@ -101,9 +105,9 @@ const isKnown = c => !!OFFICIAL[c] || EXTRA_KEYS.includes(c);
     if (!G[a]) noGeom.push(d[1]);
     return { nev: d[1].replace(/\s+/g, ' ').trim(), haszn: kod,
       befejezes: `${Math.floor(last / 100)}-${String(last % 100).padStart(2, '0')}`,
-      x: Object.fromEntries(Object.entries({ 'Erdészet': d[2],
+      x: withSource(Object.fromEntries(Object.entries({ 'Erdészet': d[2],
            'Ütemezett hónapok': years.map(y => `${y}: ` + ms.filter(x => Math.floor(x / 100) === y).map(x => HU[x % 100 - 1]).join(', ')).join('; '),
-           'Terv állapota': [...all].join(', '), 'Üzemmód': d[3], 'Természetességi mutató': d[4] }).filter(([, v]) => v != null)),   // egyéb részleteknél (út, nyiladék) nincs üzemmód
+           'Terv állapota': [...all].join(', '), 'Üzemmód': d[3], 'Természetességi mutató': d[4] }).filter(([, v]) => v != null)), code, kod),   // egyéb részleteknél (út, nyiladék) nincs üzemmód
       g: G[a] ? wkt(G[a]) : null };
   });
   copy(JSON.stringify(rows));

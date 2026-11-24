@@ -75,7 +75,7 @@ rsvg-convert -w 140 -h 140 favicon.svg -o /tmp/t140.png
 convert -size 180x180 xc:'#f6f7f4' /tmp/t140.png -gravity center -composite apple-touch-icon.png
 ```
 
-Egy adatsor: `[erdőrészlet, fahasználati mód, várható befejezés, körzet, terület (ha), tulajdon, rendeltetés, Natura 2000, védettség, NÉBIH RET_ID, geometria, extra]`. A fahasználati mód a hivatalos (NÉBIH) kód, pl. `NFGY`; a forrásonkénti elnevezések leképezése a [fogalomtárban](docs/fahasznalati-modok.md#leképezés-a-források-elnevezései--hivatalos-kód) van. Az utolsó, opcionális `extra` elem a forrás saját adatai `{címke: érték}` formában. A várható befejezés `ÉÉÉÉ-HH-NN` vagy (ha a forrás csak hónapot ad) `ÉÉÉÉ-HH`. A geometria poligononként gyűrűk listája, [Google encoded polyline](https://developers.google.com/maps/documentation/utilities/polylinealgorithm) formában (1e-5 fok ≈ 1 m pontosság).
+Egy adatsor: `[erdőrészlet, fahasználati mód, várható befejezés, körzet, terület (ha), tulajdon, rendeltetés, Natura 2000, védettség, NÉBIH RET_ID, geometria, extra]`. A fahasználati mód a hivatalos (NÉBIH) kód, pl. `NFGY`; a forrásonkénti elnevezések leképezése a [fogalomtárban](docs/fahasznalati-modok.md#leképezés-a-források-elnevezései--hivatalos-kód) van; ha a forrás elnevezése ettől eltér, az az `extra` mező „Fahasználat a forrás szerint” címkéjébe kerül (a szkriptek ezt maguktól kitöltik). Az utolsó, opcionális `extra` elem a forrás saját adatai `{címke: érték}` formában. A várható befejezés `ÉÉÉÉ-HH-NN` vagy (ha a forrás csak hónapot ad) `ÉÉÉÉ-HH`. A geometria poligononként gyűrűk listája, [Google encoded polyline](https://developers.google.com/maps/documentation/utilities/polylinealgorithm) formában (1e-5 fok ≈ 1 m pontosság).
 
 ## Új forrás vagy frissítés
 

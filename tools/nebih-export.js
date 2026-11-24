@@ -36,6 +36,10 @@ const toCode = (v, codes) => { if (!v) return v; const s = v.trim().replace(/\s+
   if (OFFICIAL[s.toUpperCase()] || EXTRA_KEYS.includes(s.toUpperCase())) return s.toUpperCase();
   return Object.keys(OFFICIAL).find(k => OFFICIAL[k].toLowerCase() === l) || s; };
 const isKnown = c => !!OFFICIAL[c] || EXTRA_KEYS.includes(c);
+// ha a forrás elnevezése eltér a hivatalos kódtól és névtől, a felugró ablakban is megjelenik („Fahasználat a forrás szerint”)
+const sourceName = (v, code) => { if (!v) return null; const s = v.trim().replace(/\s+/g, ' ');
+  return s.toUpperCase() === code || (OFFICIAL[code] || '').toLowerCase() === s.toLowerCase() ? null : s; };
+const withSource = (x, v, code) => { const s = sourceName(v, code); return s ? { 'Fahasználat a forrás szerint': s, ...(x || {}) } : x; };
 
 (async () => {
   const enc = pts => { let s = '', pl = 0, pn = 0;
@@ -46,7 +50,7 @@ const isKnown = c => !!OFFICIAL[c] || EXTRA_KEYS.includes(c);
     return s; };
   const rows = ROWS || INPUT.trim().split('\n').filter(l => l.trim()).map(l => {
     const [nev, haszn, befejezes] = l.split('|').map(s => s.trim());
-    return { nev: nev.replace(/(\d+)\s*([A-ZÁÉÍÓÖŐÚÜŰ]+)$/, '$1 $2'), haszn: toCode(haszn, CODES), befejezes: befejezes || null, g: null }; });
+    return { nev: nev.replace(/(\d+)\s*([A-ZÁÉÍÓÖŐÚÜŰ]+)$/, '$1 $2'), haszn: toCode(haszn, CODES), befejezes: befejezes || null, g: null, x: withSource(null, haszn, toCode(haszn, CODES)) }; });
   const unknownModes = [...new Set(rows.map(r => r.haszn).filter(h => !isKnown(h)))];
   // NÉBIH-kulcs: „TELEPÜLÉS TAG/RÉSZLET”, alrészletnél szóközzel: „B2” / „B 2” → „B 2”
   const key = n => { const m = n.match(/^(.+) (\d+) ?([A-ZÁÉÍÓÖŐÚÜŰ0-9 ]+)$/);

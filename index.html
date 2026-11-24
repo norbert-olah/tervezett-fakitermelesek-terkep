@@ -235,12 +235,14 @@ const dt = s => s ? s.replace(/-/g,'. ')+'.' : '';
 const sum = a => a.reduce((s,f)=>s+(f.ter||0),0);
 let selected = null;
 
+const SRCNAME='Fahasználat a forrás szerint';   // extra mező: a forrás saját elnevezése, ha eltér a hivatalostól
 function popupHtml(f){ const m=modeOf(f.haszn); const c=f.layer.getBounds().getCenter();
  const la=c.lat.toFixed(5), lo=c.lng.toFixed(5);
  return `<div class="pp"><h3>${esc(f.hely)} ${f.tag}/${esc(f.res)}</h3>
  <div class="mode"><i style="background:${m.c}"></i>${esc(m.n)} <small>(${m.g==='biz'?'bizonytalan besorolás':esc(m.k)})</small></div>
  <table>
  <tr><td>Erdőgazdaság</td><td>${esc(f.src.nev)}</td></tr>
+ ${f.x[SRCNAME]?`<tr><td>${SRCNAME}</td><td>${esc(f.x[SRCNAME])}</td></tr>`:''}
  ${f.befejezes?`<tr><td>Várható befejezés</td><td>${dt(f.befejezes)}</td></tr>`:''}
  <tr><td>Részlet területe</td><td>${fmt(f.ter)} ha</td></tr>
  <tr><td>Erdőtervezési körzet</td><td>${esc(f.korzet)}</td></tr>
@@ -248,7 +250,7 @@ function popupHtml(f){ const m=modeOf(f.haszn); const c=f.layer.getBounds().getC
  <tr><td>Védettség</td><td>${esc(f.vedett)}</td></tr>
  <tr><td>Natura 2000</td><td>${esc(f.natura)}</td></tr>
  <tr><td>Tulajdon</td><td>${esc(f.tulf)}</td></tr>
- ${Object.entries(f.x).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join('')}
+ ${Object.entries(f.x).filter(([k])=>k!==SRCNAME).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join('')}
  </table>
  <div class="links"><a href="${esc(f.src.url)}" target="_blank" rel="noopener">Forrás</a><a href="https://www.google.com/maps?q=${la},${lo}" target="_blank" rel="noopener">Google Térkép</a><a href="https://www.openstreetmap.org/?mlat=${la}&mlon=${lo}#map=16/${la}/${lo}" target="_blank" rel="noopener">OSM</a></div></div>`; }
 
