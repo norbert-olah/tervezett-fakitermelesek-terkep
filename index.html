@@ -56,8 +56,11 @@ header p{margin:0;font-size:13.5px;color:#cfe0d4}
 #srcBtn{margin-left:auto;font:inherit;font-size:13.5px;font-weight:600;color:#fff;background:var(--deep2);border:0;border-radius:6px;padding:8px 12px;min-height:36px;cursor:pointer}
 #srcBtn:focus-visible,.dlg button:focus-visible,.dlg a:focus-visible{outline:2px solid var(--deep);outline-offset:2px}
 .dlg{border:0;border-radius:10px;padding:0;width:min(560px,calc(100vw - 24px));max-height:calc(100vh - 48px);box-shadow:0 12px 40px rgba(0,0,0,.3);color:var(--ink)}
+/* A dialógus maga nem görget (különben a görgetősáv a fejlécen és a lekerekített sarkokon is átlógna), csak a törzse (.sc). */
+.dlg[open]{display:flex;flex-direction:column;overflow:hidden}
+.dlg .sc{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#b9c4bc transparent}
 .dlg::backdrop{background:rgba(20,30,24,.45)}
-.dlg .hd{position:sticky;top:0;z-index:1;display:flex;align-items:center;background:var(--deep);color:#fff;padding:12px 16px}
+.dlg .hd{flex:none;display:flex;align-items:center;background:var(--deep);color:#fff;padding:12px 16px}
 .dlg h2{margin:0;font-size:18px}
 .dlg .x{margin-left:auto;background:none;border:0;color:#fff;font-size:26px;line-height:1;cursor:pointer;width:40px;height:40px}
 #srcDlg ul{list-style:none;margin:0;padding:4px 16px 12px}
@@ -156,16 +159,16 @@ header p{margin:0;font-size:13.5px;color:#cfe0d4}
 </aside>
 <dialog id="srcDlg" class="dlg" aria-labelledby="srcTitle">
  <div class="hd"><h2 id="srcTitle">Adatforrások</h2><button class="x" type="button" aria-label="Bezárás">×</button></div>
- <ul id="srcList"></ul>
+ <div class="sc"><ul id="srcList"></ul>
  <div class="legal">
   <p><b>Nem hivatalos oldal.</b> Tájékoztató jellegű összesítés a fenti forrásokból; az adatok hibásak vagy elavultak lehetnek, a tényleges munkák eltérhetnek. Mértékadó mindig az eredeti forrás. Az oldal használatából eredő károkért felelősséget nem vállalok.</p>
   <p><b>Adatvédelem:</b> az oldal nem használ sütit és nem gyűjt adatot; csak a választott háttértérképet jegyzi meg a böngésződben. A térképcsempék betöltésekor az IP-címed a csempeszolgáltatóhoz (Esri, ill. a választott OpenStreetMap / OpenTopoMap, NÉBIH) jut, az oldalt a GitHub Pages szolgálja ki.</p>
   <p>Kód: <a href="https://github.com/norbert-olah/tervezett-fakitermelesek-terkep/blob/main/LICENSE" target="_blank" rel="noopener">MIT licenc</a> · Ikon: Noto Emoji (Google, Apache 2.0) · Térképkönyvtár: Leaflet (BSD-2)</p>
- </div>
+ </div></div>
 </dialog>
 <dialog id="glsDlg" class="dlg" aria-labelledby="glsTitle">
  <div class="hd"><h2 id="glsTitle">Fogalomtár</h2><button class="x" type="button" aria-label="Bezárás">×</button></div>
- <div class="bd" id="glsBody"></div>
+ <div class="bd sc" id="glsBody"></div>
 </dialog>
 <div id="map"></div>
 
@@ -362,7 +365,7 @@ document.querySelectorAll('.dlg').forEach(d=>{
 $('srcBtn').addEventListener('click',()=>openDlg($('srcDlg')));
 const gls=$('glsDlg');
 function openGls(id){ gls.querySelectorAll('.hl').forEach(e=>e.classList.remove('hl')); openDlg(gls);
- const t=id && $('gls-'+id); if(t){ t.classList.add('hl'); t.scrollIntoView({block:'start'}); } else gls.scrollTop=0; }
+ const t=id && $('gls-'+id); if(t){ t.classList.add('hl'); t.scrollIntoView({block:'start'}); } else $('glsBody').scrollTop=0; }
 $('glsBtn').addEventListener('click',()=>openGls());
 
 function render(){
