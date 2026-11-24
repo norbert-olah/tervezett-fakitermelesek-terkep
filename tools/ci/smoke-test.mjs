@@ -76,6 +76,27 @@ async function run(label, viewport) {
   check(srcItems === ERDO.sources.length + 1, `a Források ablakban ${ERDO.sources.length} forrás + NÉBIH van (talált: ${srcItems})`);
   await page.keyboard.press('Escape');
 
+  // Fogalomtár: a jelmagyarázat fejlécéből megnyílik, minden látható mód szerepel benne, a hivatkozások linkek, nem lóg ki
+  await page.click('#glsBtn');
+  check(await page.locator('#glsDlg[open]').count() === 1, 'a „Mit jelentenek?” gombra megnyílik a Fogalomtár ablak');
+  const legendModes = await page.locator('#legend [data-k]').count();
+  const glsModes = await page.locator('#glsDlg .gm').count();
+  check(glsModes === legendModes && glsModes > 0, `a Fogalomtárban a jelmagyarázat mind a ${legendModes} módja szerepel (talált: ${glsModes})`);
+  const hrefs = await page.$$eval('#glsDlg a', as => as.map(a => a.getAttribute('href')));
+  const bad = hrefs.filter(h => !/^https:\/\/[^\s]+$/.test(h || ''));
+  check(hrefs.length > glsModes && !bad.length, `a Fogalomtár hivatkozásai érvényes https-linkek (${hrefs.length} db${bad.length ? ', hibás: ' + bad.join(', ') : ''})`);
+  check(await page.$$eval('#glsDlg a', as => as.every(a => a.target === '_blank' && /noopener/.test(a.rel))), 'a Fogalomtár linkjei új lapon nyílnak (noopener)');
+  const dlgBox = await page.locator('#glsDlg').boundingBox();
+  check(dlgBox && dlgBox.x >= 0 && dlgBox.x + dlgBox.width <= viewport.width + 1 && dlgBox.y >= 0 && dlgBox.y + dlgBox.height <= viewport.height + 1, 'a Fogalomtár ablak a képernyőn belül van');
+  check(!(await page.locator('#glsDlg').evaluate(e => e.scrollWidth > e.clientWidth)), 'a Fogalomtár tartalma nem lóg ki vízszintesen');
+  await page.keyboard.press('Escape');
+  // „bővebben” egy mód ? dobozából: a Fogalomtár az adott módnál nyílik meg
+  await page.locator('#legend .fold').first().click();
+  await page.locator('#legend .lgm .info').first().click();
+  await page.locator('#legend .lgm .desc.open .more').first().click();
+  check(await page.locator('#glsDlg[open] .gm.hl').count() === 1, 'a ? doboz „bővebben” gombja a Fogalomtárban a módhoz ugrik');
+  await page.keyboard.press('Escape');
+
   if (process.env.SCREENSHOT_DIR) await page.screenshot({ path: `${process.env.SCREENSHOT_DIR}/${label}.png` });
   await page.close();
 }
