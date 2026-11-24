@@ -54,12 +54,12 @@ header p{margin:0;font-size:13.5px;color:#cfe0d4}
 #about a:hover{text-decoration:underline}
 #about svg{width:18px;height:18px;flex:none}
 #srcBtn{margin-left:auto;font:inherit;font-size:13.5px;font-weight:600;color:#fff;background:var(--deep2);border:0;border-radius:6px;padding:8px 12px;min-height:36px;cursor:pointer}
-#srcBtn:focus-visible,#srcDlg button:focus-visible{outline:2px solid var(--deep);outline-offset:2px}
-#srcDlg{border:0;border-radius:10px;padding:0;width:min(560px,calc(100vw - 24px));max-height:calc(100vh - 48px);box-shadow:0 12px 40px rgba(0,0,0,.3);color:var(--ink)}
-#srcDlg::backdrop{background:rgba(20,30,24,.45)}
-#srcDlg .hd{display:flex;align-items:center;background:var(--deep);color:#fff;padding:12px 16px}
-#srcDlg h2{margin:0;font-size:18px}
-#srcDlg .x{margin-left:auto;background:none;border:0;color:#fff;font-size:26px;line-height:1;cursor:pointer;width:40px;height:40px}
+#srcBtn:focus-visible,.dlg button:focus-visible,.dlg a:focus-visible{outline:2px solid var(--deep);outline-offset:2px}
+.dlg{border:0;border-radius:10px;padding:0;width:min(560px,calc(100vw - 24px));max-height:calc(100vh - 48px);box-shadow:0 12px 40px rgba(0,0,0,.3);color:var(--ink)}
+.dlg::backdrop{background:rgba(20,30,24,.45)}
+.dlg .hd{position:sticky;top:0;z-index:1;display:flex;align-items:center;background:var(--deep);color:#fff;padding:12px 16px}
+.dlg h2{margin:0;font-size:18px}
+.dlg .x{margin-left:auto;background:none;border:0;color:#fff;font-size:26px;line-height:1;cursor:pointer;width:40px;height:40px}
 #srcDlg ul{list-style:none;margin:0;padding:4px 16px 12px}
 #srcDlg li{padding:8px 0;border-bottom:1px solid var(--line);line-height:1.35}
 #srcDlg li:last-child{border-bottom:0}
@@ -71,6 +71,25 @@ header p{margin:0;font-size:13.5px;color:#cfe0d4}
 #srcDlg .legal p{margin:0 0 6px}#srcDlg .legal p:last-child{margin:0}
 #srcDlg .legal a{color:var(--deep2)}
 #srcDlg .note{font-size:12.5px;color:var(--muted);padding:0 16px 14px;margin:0}
+#glsDlg{width:min(720px,calc(100vw - 24px))}
+#glsDlg .bd{padding:4px 16px 14px;font-size:14px;line-height:1.4}
+#glsDlg h3{font-size:15px;margin:14px 0 4px;color:var(--deep)}
+#glsDlg p{margin:0 0 6px}
+#glsDlg dl{margin:0}
+#glsDlg dt{font-weight:700;margin-top:6px}
+#glsDlg dd{margin:0 0 2px}
+#glsDlg .gh{font-weight:700;color:var(--deep);border-top:1px solid var(--line);padding-top:8px;margin-top:10px}
+#glsDlg .gd{color:var(--muted);font-size:13.5px}
+#glsDlg .gm{display:flex;gap:8px;align-items:baseline;padding:4px 0 2px;scroll-margin-top:8px}
+#glsDlg .gm .sw{transform:translateY(2px)}
+#glsDlg .gm.hl{background:#fff6cf}
+#glsDlg .ref{font-size:12.5px;color:var(--muted)}
+#glsDlg .ref a{white-space:nowrap}
+#glsDlg a{color:var(--deep2);overflow-wrap:anywhere}
+#glsDlg .foot{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);margin-top:12px;padding-top:8px}
+.sec h2 .hlink,.desc .more{border:0;background:none;padding:0 2px;font:inherit;font-weight:400;color:var(--deep2);text-decoration:underline;cursor:pointer}
+.sec h2 .hlink{font-size:12.5px;margin-left:6px}
+.desc .more{font-size:13px;margin-left:4px}
 #map{height:100vh;background:#dde3dc}
 .leaflet-popup-content{font:14px/1.4 "Source Sans 3",system-ui,sans-serif;margin:12px 14px;min-width:230px}
 .pp h3{margin:0 0 2px;font-size:17px}
@@ -118,7 +137,7 @@ header p{margin:0;font-size:13.5px;color:#cfe0d4}
    <div class="chk src" id="sources"></div>
   </div>
   <div class="sec">
-   <h2>Fahasználati mód</h2>
+   <h2>Fahasználati mód<button class="hlink" id="glsBtn" type="button" aria-haspopup="dialog">Mit jelentenek?</button></h2>
    <div class="chk" id="legend"></div>
   </div>
   <div class="sec chk">
@@ -135,7 +154,7 @@ header p{margin:0;font-size:13.5px;color:#cfe0d4}
   <button id="srcBtn" type="button" aria-haspopup="dialog">Források</button>
  </div>
 </aside>
-<dialog id="srcDlg" aria-labelledby="srcTitle">
+<dialog id="srcDlg" class="dlg" aria-labelledby="srcTitle">
  <div class="hd"><h2 id="srcTitle">Adatforrások</h2><button class="x" type="button" aria-label="Bezárás">×</button></div>
  <ul id="srcList"></ul>
  <div class="legal">
@@ -143,6 +162,10 @@ header p{margin:0;font-size:13.5px;color:#cfe0d4}
   <p><b>Adatvédelem:</b> az oldal nem használ sütit és nem gyűjt adatot; csak a választott háttértérképet jegyzi meg a böngésződben. A térképcsempék betöltésekor az IP-címed a csempeszolgáltatóhoz (Esri, ill. a választott OpenStreetMap / OpenTopoMap, NÉBIH) jut, az oldalt a GitHub Pages szolgálja ki.</p>
   <p>Kód: <a href="https://github.com/norbert-olah/tervezett-fakitermelesek-terkep/blob/main/LICENSE" target="_blank" rel="noopener">MIT licenc</a> · Ikon: Noto Emoji (Google, Apache 2.0) · Térképkönyvtár: Leaflet (BSD-2)</p>
  </div>
+</dialog>
+<dialog id="glsDlg" class="dlg" aria-labelledby="glsTitle">
+ <div class="hd"><h2 id="glsTitle">Fogalomtár</h2><button class="x" type="button" aria-label="Bezárás">×</button></div>
+ <div class="bd" id="glsBody"></div>
 </dialog>
 <div id="map"></div>
 
@@ -168,30 +191,51 @@ const GROUPS = [
 // Fahasználati módok. k: a NÉBIH fakitermelési/haszonvételi kódja, a bizonytalan besorolásúaknál saját BIZ- kulcs
 // (l. docs/fahasznalati-modok.md); g: csoport, n: megjelenített név, c: szín, lc: körvonalszín, ha eltér a kitöltésétől, d: leírás. A sorrend a jelmagyarázat sorrendje;
 // a jelmagyarázatban csak az adatokban előforduló módok és csoportok jelennek meg.
+// j: jogszabályi / hatósági hivatkozások a fogalomtárhoz: [forrás, §, bekezdés/pont] vagy [NÉBIH-útmutató, oldal] (l. LAW alább;
+// a jogszabályhelyek a docs/fahasznalati-modok.md „Kódok” táblájából).
 const MODES = [
- {k:'HGY', g:'ritk', n:'haszonvételi gyérítés', c:'#c6dbef', d:'Kis erélyű gyérítés: az átlagos záródás legfeljebb 5%-kal csökkenhet, erdőfelújítási kötelezettség nem keletkezik. 2017. december 29. előtt „készletgondozó használat” (KH) volt a neve.'},
- {k:'TI', g:'ritk', n:'tisztítás', c:'#9ecae1', d:'Fiatal, még nem gyérítési korú állomány ápolása: a nem kívánt, rossz alakú vagy elnyomó egyedek eltávolítása, az elegyarány szabályozása.'},
- {k:'TKGY', g:'ritk', n:'törzskiválasztó gyérítés', c:'#6baed6', d:'Fiatal–középkorú állományban a jövőbeli célfák kiválasztása és a velük versengő egyedek kivágása.'},
- {k:'NFGY', g:'ritk', n:'növedékfokozó gyérítés', c:'#2171b5', d:'Idősebb állomány ritkítása, hogy a visszamaradó fák jobban növekedjenek. Az állomány megmarad, csak sűrűsége csökken.'},
- {k:'KGH', g:'ritk', n:'készletgondozó használat', c:'#08306b', d:'Folyamatos erdőborítás mellett végzett fakitermelés: egyes fákat vagy kisebb facsoportokat vesznek ki úgy, hogy közben fennmaradjon a többkorú, vegyes szerkezetű erdő. Örökerdő üzemmódban csak ez a mód tervezhető, és nem hagyhat 0,25 hektárnál nagyobb, felújítandó üres vágásterületet. 2017 előtt „szálalás” volt a neve.'},
- {k:'SZV', g:'fok', n:'szálalóvágás', c:'#fdae6b', d:'Véghasználat: az idős állományt 30 évnél hosszabb idő alatt, több beavatkozással termelik ki, miközben alatta újulat nő fel. A bontóvágás után erdőfelújítási kötelezettség keletkezik. Ha az idős fák záródása az erdőrészleten vagy annak egy 1 hektárnál nagyobb összefüggő részén 30% alá csökken, azt a jogszabály végvágásnak tekinti.'},
- {k:'FVB', g:'fok', n:'felújító vágás bontó vágása', c:'#f16913', d:'Véghasználat, a fokozatos felújítóvágás része: az idős állományt megritkítják, hogy alatta az újulat megtelepedjen és fényhez jusson. Az egész felújítás legfeljebb 30 év. A kitermelés miatti záródáscsökkenés arányában erdőfelújítási kötelezettség keletkezik. Ha az idős fák záródása az erdőrészleten vagy annak egy 1 hektárnál nagyobb összefüggő részén 30% alá csökken, azt a jogszabály végvágásnak tekinti.'},
- {k:'FVV', g:'ves', n:'felújító vágás végvágása', c:'#cb181d', d:'A fokozatos felújítóvágás utolsó lépése: az újulat fölül kitermelik a megmaradt idős fákat. Utána a területen csak fiatalos marad, és határidős erdőfelújítási kötelezettség keletkezik.'},
- {k:'TRV', g:'ves', n:'tarvágás', c:'#67000d', d:'Véghasználat: az állományt egyetlen beavatkozással termelik ki. Utána határidős erdőfelújítási kötelezettség keletkezik. A törvény korlátozza, mekkora lehet az egybefüggő, felújítási kötelezettség alatt álló terület.'},
- {k:'EÜ', g:'egy', n:'egészségügyi fakitermelés', c:'#b2abd2', d:'Beteg, károsodott, kiszáradt vagy balesetveszélyes fák eltávolítása, a kártevők és betegségek terjedésének megelőzésére.'},
- {k:'ET', g:'egy', n:'egyéb termelés', c:'#40004b', d:'A fenti kategóriákba nem sorolt fakitermelés, pl. utakat, épületeket veszélyeztető fák eltávolítása. A Vérteserdő szerint ide tartozik az idegenhonos állományok fokozatos, tarvágás nélküli átalakítása is.'},
- {k:'VÁT', g:'egy', n:'vágástakarítás', c:'#807dba', d:'Egy korábban bejelentett fakitermelés után a területen maradt faanyag összegyűjtése, az erdőfelújítás érdekében.'},
- {k:'ÁP', g:'egy', n:'ápolás', c:'#bcbddc', d:'Erdősítés érdekében végzett ápolás. Haszonvételi mód, nem fakitermelés.'},
- {k:'BEFÁP', g:'egy', n:'befejezett erdősítés ápolóvágása', c:'#bcbddc', d:'Befejezett erdősítésben végzett ápolóvágás. Haszonvételi mód.'},
- {k:'FFK', g:'egy', n:'faanyag felkészítése', c:'#bcbddc', d:'Egy korábbi, végrehajtottként már bejelentett fakitermelés során kivágott faanyag felkészítése. Haszonvételi mód.'},
- {k:'FGÁ', g:'egy', n:'gallygyűjtés, nyesés', c:'#bcbddc', d:'Fekvő gally gyűjtése, elhalt, száraz ág nyesése, törzsnyesés. Haszonvételi mód.'},
- {k:'CSK', g:'egy', n:'cserje kitermelése', c:'#bcbddc', d:'Cserje kitermelése. Haszonvételi mód.'},
- {k:'TK', g:'egy', n:'tuskó termelése', c:'#bcbddc', d:'Tuskó kitermelése. Haszonvételi mód.'},
- {k:'BIZ-BONT', g:'biz', n:'bontás (bontóvágás vagy szálalóvágás)', c:'#fff2a8', lc:'#b8a040', d:'A forrás csak „bontás”-t ír. A hatósági kódlistában „bontó vágás” néven a fokozatos felújítóvágás bontóvágása (FVB) szerepel, ezért valószínűleg az; a szálalóvágás (SZV) is kezdődhet bontóvágással. Mindkettő véghasználat: az idős állományt megritkítják, hogy alatta az újulat megtelepedjen, és erdőfelújítási kötelezettség keletkezik.'},
- {k:'BIZ-SZA', g:'biz', n:'szerkezetátalakítás', c:'#ffe14d', lc:'#9c7f00', d:'Nem hatósági fakitermelési kód. Az erdőszerkezet-átalakítás az erdőtörvény szerint olyan tevékenység, amely a meglévő erdő természetességi állapotán változtat, például idegenhonos faállományt őshonosra cserél. A forrás nem közli, milyen fakitermelési móddal (pl. tarvágással, fokozatos felújítóvágással vagy egyéb termelésként) történik.'}
+ {k:'HGY', g:'ritk', n:'haszonvételi gyérítés', c:'#c6dbef', d:'Kis erélyű gyérítés: az átlagos záródás legfeljebb 5%-kal csökkenhet, erdőfelújítási kötelezettség nem keletkezik. 2017. december 29. előtt „készletgondozó használat” (KH) volt a neve.', j:[['Vhr','46','(5)'],['NÉBIH18'],['NÉBIH19']]},
+ {k:'TI', g:'ritk', n:'tisztítás', c:'#9ecae1', d:'Fiatal, még nem gyérítési korú állomány ápolása: a nem kívánt, rossz alakú vagy elnyomó egyedek eltávolítása, az elegyarány szabályozása.', j:[['Evt','71','(1) a)'],['Vhr','46','(2)']]},
+ {k:'TKGY', g:'ritk', n:'törzskiválasztó gyérítés', c:'#6baed6', d:'Fiatal–középkorú állományban a jövőbeli célfák kiválasztása és a velük versengő egyedek kivágása.', j:[['Evt','71','(1) b)'],['Vhr','46','(3)']]},
+ {k:'NFGY', g:'ritk', n:'növedékfokozó gyérítés', c:'#2171b5', d:'Idősebb állomány ritkítása, hogy a visszamaradó fák jobban növekedjenek. Az állomány megmarad, csak sűrűsége csökken.', j:[['Evt','71','(1) b)'],['Vhr','46','(4)']]},
+ {k:'KGH', g:'ritk', n:'készletgondozó használat', c:'#08306b', d:'Folyamatos erdőborítás mellett végzett fakitermelés: egyes fákat vagy kisebb facsoportokat vesznek ki úgy, hogy közben fennmaradjon a többkorú, vegyes szerkezetű erdő. Örökerdő üzemmódban csak ez a mód tervezhető, és nem hagyhat 0,25 hektárnál nagyobb, felújítandó üres vágásterületet. 2017 előtt „szálalás” volt a neve.', j:[['Evt','71','(1) f)'],['Vhr','24/A','(1)'],['Vhr','46','(7)'],['NÉBIH19']]},
+ {k:'SZV', g:'fok', n:'szálalóvágás', c:'#fdae6b', d:'Véghasználat: az idős állományt 30 évnél hosszabb idő alatt, több beavatkozással termelik ki, miközben alatta újulat nő fel. A bontóvágás után erdőfelújítási kötelezettség keletkezik. Ha az idős fák záródása az erdőrészleten vagy annak egy 1 hektárnál nagyobb összefüggő részén 30% alá csökken, azt a jogszabály végvágásnak tekinti.', j:[['Evt','71','(1) e)'],['Vhr','36','(3)'],['Vhr','46','(6)']]},
+ {k:'FVB', g:'fok', n:'felújító vágás bontó vágása', c:'#f16913', d:'Véghasználat, a fokozatos felújítóvágás része: az idős állományt megritkítják, hogy alatta az újulat megtelepedjen és fényhez jusson. Az egész felújítás legfeljebb 30 év. A kitermelés miatti záródáscsökkenés arányában erdőfelújítási kötelezettség keletkezik. Ha az idős fák záródása az erdőrészleten vagy annak egy 1 hektárnál nagyobb összefüggő részén 30% alá csökken, azt a jogszabály végvágásnak tekinti.', j:[['Evt','71','(1) d)'],['Vhr','36','(3)'],['Vhr','47','(1)']]},
+ {k:'FVV', g:'ves', n:'felújító vágás végvágása', c:'#cb181d', d:'A fokozatos felújítóvágás utolsó lépése: az újulat fölül kitermelik a megmaradt idős fákat. Utána a területen csak fiatalos marad, és határidős erdőfelújítási kötelezettség keletkezik.', j:[['Evt','71','(1) d)'],['Vhr','36','(3)']]},
+ {k:'TRV', g:'ves', n:'tarvágás', c:'#67000d', d:'Véghasználat: az állományt egyetlen beavatkozással termelik ki. Utána határidős erdőfelújítási kötelezettség keletkezik. A törvény korlátozza, mekkora lehet az egybefüggő, felújítási kötelezettség alatt álló terület.', j:[['Evt','71','(1) c)'],['Evt','74','(1)']]},
+ {k:'EÜ', g:'egy', n:'egészségügyi fakitermelés', c:'#b2abd2', d:'Beteg, károsodott, kiszáradt vagy balesetveszélyes fák eltávolítása, a kártevők és betegségek terjedésének megelőzésére.', j:[['Evt','71','(1) g)']]},
+ {k:'ET', g:'egy', n:'egyéb termelés', c:'#40004b', d:'A fenti kategóriákba nem sorolt fakitermelés, pl. utakat, épületeket veszélyeztető fák eltávolítása. A Vérteserdő szerint ide tartozik az idegenhonos állományok fokozatos, tarvágás nélküli átalakítása is.', j:[['Evt','71','(1) h)'],['Vhr','21','(8) c)']]},
+ {k:'VÁT', g:'egy', n:'vágástakarítás', c:'#807dba', d:'Egy korábban bejelentett fakitermelés után a területen maradt faanyag összegyűjtése, az erdőfelújítás érdekében.', j:[['Vhr','43','(8)']]},
+ {k:'ÁP', g:'egy', n:'ápolás', c:'#bcbddc', d:'Erdősítés érdekében végzett ápolás. Haszonvételi mód, nem fakitermelés.', j:[['NÉBIH19','4. o.']]},
+ {k:'BEFÁP', g:'egy', n:'befejezett erdősítés ápolóvágása', c:'#bcbddc', d:'Befejezett erdősítésben végzett ápolóvágás. Haszonvételi mód.', j:[['NÉBIH19','4. o.']]},
+ {k:'FFK', g:'egy', n:'faanyag felkészítése', c:'#bcbddc', d:'Egy korábbi, végrehajtottként már bejelentett fakitermelés során kivágott faanyag felkészítése. Haszonvételi mód.', j:[['NÉBIH19','4. o.']]},
+ {k:'FGÁ', g:'egy', n:'gallygyűjtés, nyesés', c:'#bcbddc', d:'Fekvő gally gyűjtése, elhalt, száraz ág nyesése, törzsnyesés. Haszonvételi mód.', j:[['NÉBIH19','4. o.']]},
+ {k:'CSK', g:'egy', n:'cserje kitermelése', c:'#bcbddc', d:'Cserje kitermelése. Haszonvételi mód.', j:[['NÉBIH19','4. o.']]},
+ {k:'TK', g:'egy', n:'tuskó termelése', c:'#bcbddc', d:'Tuskó kitermelése. Haszonvételi mód.', j:[['NÉBIH19','4. o.']]},
+ {k:'BIZ-BONT', g:'biz', n:'bontás (bontóvágás vagy szálalóvágás)', c:'#fff2a8', lc:'#b8a040', d:'A forrás csak „bontás”-t ír. A hatósági kódlistában „bontó vágás” néven a fokozatos felújítóvágás bontóvágása (FVB) szerepel, ezért valószínűleg az; a szálalóvágás (SZV) is kezdődhet bontóvágással. Mindkettő véghasználat: az idős állományt megritkítják, hogy alatta az újulat megtelepedjen, és erdőfelújítási kötelezettség keletkezik.', j:[['Evt','71','(1) d), e)'],['NÉBIH19']]},
+ {k:'BIZ-SZA', g:'biz', n:'szerkezetátalakítás', c:'#ffe14d', lc:'#9c7f00', d:'Nem hatósági fakitermelési kód. Az erdőszerkezet-átalakítás az erdőtörvény szerint olyan tevékenység, amely a meglévő erdő természetességi állapotán változtat, például idegenhonos faállományt őshonosra cserél. A forrás nem közli, milyen fakitermelési móddal (pl. tarvágással, fokozatos felújítóvágással vagy egyéb termelésként) történik.', j:[['Evt','55']]}
 ];
 const modeOf = k => MODES.find(m => m.k === k) || {k, g:'biz', n:`ismeretlen mód (${k})`, c:'#969696', d:'Ez a mód nem szerepel a térkép kódlistájában.'};
 const groupOf = k => GROUPS.find(g => g.k === k);
+// Fogalomtár ablak: források és alapfogalmak. A szövegek a docs/fahasznalati-modok.md-ből kivonatolva; ha ott változik
+// egy jogszabályhely vagy állítás, itt is át kell vezetni. a: horgony a §-hoz (njt.jog.gov.hu), ha a forrás ilyet ismer.
+const LAW = {
+ 'Evt': {n:'Evt.', t:'2009. évi XXXVII. törvény az erdőről, az erdő védelméről és az erdőgazdálkodásról', u:'https://njt.jog.gov.hu/jogszabaly/2009-37-00-00', a:true},
+ 'Vhr': {n:'Vhr.', t:'61/2017. (XII. 21.) FM rendelet az erdőtörvény végrehajtásáról', u:'https://njt.jog.gov.hu/jogszabaly/2017-61-20-11', a:true},
+ 'NÉBIH19': {n:'NÉBIH-útmutató (2019)', t:'NÉBIH: Kitöltési útmutató végrehajtott fakitermelési munkák bejelentéséhez, hatályos: 2019. december 19.', u:'https://portal.nebih.gov.hu/documents/10182/1213871/Kit%C3%B6lt%C3%A9si+%C3%BAtmutat%C3%B3+v%C3%A9grehajtott+fakitermel%C3%A9si+munk%C3%A1k+bejelent%C3%A9s%C3%A9hez_2019_11_V2.pdf'},
+ 'NÉBIH18': {n:'NÉBIH-útmutató (2018)', t:'NÉBIH: Kitöltési útmutató végrehajtott fakitermelési munkák bejelentéséhez, hatályos: 2018. július 1.', u:'https://portal.nebih.gov.hu/documents/10182/1059308/Kit%c3%b6lt%c3%a9si+%c3%batmutat%c3%b3+v%c3%a9grehajtott+fakitermel%c3%a9si+munk%c3%a1k+bejelent%c3%a9s%c3%a9hez_2018_07.1.pdf'}
+};
+const CONCEPTS = [
+ {n:'Záródás', d:'Megmutatja, hogy a terület hány százalékát takarják felülről a fák koronái.', j:[['Evt','5','12. pont']]},
+ {n:'Folyamatos erdőborítás', d:'Az az állapot, amikor a több korosztályból álló faállomány megszakítás nélkül borítja az erdő talaját.', j:[['Evt','5','13. pont']]},
+ {n:'Véghasználat', d:'Vágásos vagy átmeneti üzemmódú erdőben végzett fakitermelés, amely után erdőfelújítási kötelezettség keletkezik. Ilyen a tarvágás, a fokozatos felújítóvágás és a szálalóvágás.', j:[['Evt','5','25. pont']]},
+ {n:'Erdőfelújítási kötelezettség', d:'A kitermelt faállomány helyén újra erdőt kell nevelni. Véghasználat után mindig keletkezik; a végvágás és a tarvágás után határidőn belül kell teljesíteni. A tisztítás, a gyérítések és a készletgondozó használat után csak akkor keletkezik, ha a záródás összefüggően 2 hektárnál nagyobb területen 60% alá csökken (felnyíló és felnyitott erdőben ennél alacsonyabb a határ).', j:[['Evt','51','(2) c)']]},
+ {n:'Üzemmódok', d:'Az erdő kezelésének hosszú távú módja. <b>Vágásos:</b> közel egykorú faállomány, amelyet időről időre véghasználattal kitermelnek, majd felújítanak. <b>Átmeneti:</b> a vágásos üzemmódról az örökerdőre való áttérés. <b>Örökerdő:</b> nincs erdőfelújítási kötelezettséget keletkeztető véghasználat, az erdőborítás folyamatos, a faállomány szerkezete változatos.', h:true, j:[['Evt','29','(2)']]}
+];
+const refHtml = r => { const l=LAW[r[0]]; if(!l) return '';
+ const txt = l.a ? `${l.n} ${r[1]}. §${r[2]?' '+r[2]:''}` : `${l.n}${r[1]?', '+r[1]:''}`;
+ return `<a href="${esc(l.u + (l.a ? '#SZ'+String(r[1]).replace('/','') : ''))}" target="_blank" rel="noopener" title="${esc(l.t)}">${esc(txt)}</a>`; };
+const refsHtml = j => j && j.length ? `<span class="ref">${j.map(refHtml).join(' · ')}</span>` : '';
 
 function decode(s){ const pts=[]; let i=0,lat=0,lng=0;
  while(i<s.length){ const v=[0,0];
@@ -297,17 +341,29 @@ $('legend').innerHTML = usedGroups.map((g,gi)=>{ const ms=usedModes.filter(m=>m.
  return `<div class="lg closed" data-lg="${g.k}"><div class="lgh"><button class="fold" type="button" aria-expanded="false" aria-label="Csoport be- vagy kicsukása">▸</button>`+
   `<label><input type="checkbox" checked data-g="${g.k}">${esc(g.n)}</label>`+
   `<button class="info" type="button" data-d="g${gi}" aria-label="Mit jelent?">?</button><span class="n" data-gn="${g.k}"></span></div>`+
-  `<div class="desc" id="dg${gi}">${esc(g.d)}</div><div class="lgm">`+
-  ms.map(m=>{ const i=usedModes.indexOf(m); return `<label><input type="checkbox" checked data-k="${esc(m.k)}">${sw(m)}${esc(m.n)}${m.d?`<button class="info" type="button" data-d="${i}" aria-label="Mit jelent?">?</button>`:''}<span class="n" data-mn="${esc(m.k)}"></span></label><div class="desc" id="d${i}">${esc(m.d)}</div>`; }).join('')+
+  `<div class="desc" id="dg${gi}">${esc(g.d)}<button class="more" type="button" data-gls="g-${g.k}">bővebben</button></div><div class="lgm">`+
+  ms.map(m=>{ const i=usedModes.indexOf(m); return `<label><input type="checkbox" checked data-k="${esc(m.k)}">${sw(m)}${esc(m.n)}${m.d?`<button class="info" type="button" data-d="${i}" aria-label="Mit jelent?">?</button>`:''}<span class="n" data-mn="${esc(m.k)}"></span></label><div class="desc" id="d${i}">${esc(m.d)}<button class="more" type="button" data-gls="m${i}">bővebben</button></div>`; }).join('')+
   `</div></div>`; }).join('');
 $('srcList').innerHTML = SRC.map(s=>`<li><b>${esc(s.nev)}</b> · <span class="meta">${s.rows.length} erdőrészlet</span><br><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.url)}</a><br>
  <span class="meta"><span>Közzétéve: ${dt(s.kozzetett)||'nincs megadva'}</span> · <span>Letöltve és importálva: ${dt(s.importalva)}</span></span></li>`).join('') +
  `<li><b>NÉBIH Erdőtérkép</b><br><a href="https://erdoterkep.nebih.gov.hu/" target="_blank" rel="noopener">https://erdoterkep.nebih.gov.hu/</a><br>
  <span class="meta">Részlethatárok, terület, védettség, Natura 2000, rendeltetés; élő WMS-réteg</span></li>`;
-const dlg=$('srcDlg');
-$('srcBtn').addEventListener('click',()=>{ if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open',''); });
-dlg.querySelector('.x').addEventListener('click',()=>dlg.close ? dlg.close() : dlg.removeAttribute('open'));
-dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.close(); });
+// Fogalomtár: alapfogalmak, majd a térképen látható csoportok és módok (nevek, leírások a GROUPS / MODES tömbből)
+$('glsBody').innerHTML = `<p>A térkép a fakitermeléseket aszerint csoportosítja, mennyire erős a beavatkozás, és mi marad utána a területen. Ez a térkép saját felosztása, nem jogszabályi kategória: például a szálalóvágás jogilag ugyanúgy véghasználat, mint a tarvágás. A módok neve és kódja – a bizonytalan besorolásúak kivételével – a hatósági (NÉBIH) bejelentésben használt név és kód. A hivatkozások a jogszabály vonatkozó pontjára vagy a hatósági útmutatóra mutatnak; mértékadó mindig a hatályos jogszabályszöveg.</p>
+ <h3>Alapfogalmak</h3><dl>${CONCEPTS.map(c=>`<dt>${esc(c.n)}</dt><dd>${c.h?c.d:esc(c.d)} ${refsHtml(c.j)}</dd>`).join('')}</dl>
+ <h3>Fahasználati módok a térképen</h3>${usedGroups.map(g=>`<div class="gh" id="gls-g-${g.k}">${esc(g.n)}</div><div class="gd">${esc(g.d)}</div>`+
+  usedModes.filter(m=>m.g===g.k).map(m=>`<div class="gm" id="gls-m${usedModes.indexOf(m)}">${sw(m)}<div><b>${esc(m.n)}</b>${m.g==='biz'?'':` <span class="ref">(${esc(m.k)})</span>`}<br>${esc(m.d)} ${refsHtml(m.j)}</div></div>`).join('')).join('')}
+ <div class="foot">Források: ${Object.values(LAW).map(l=>`<a href="${esc(l.u)}" target="_blank" rel="noopener">${esc(l.t)}</a>`).join('; ')}. A részletes, szakmai fogalomtár (leképezés, indoklások, nyitott kérdések): <a href="https://github.com/norbert-olah/tervezett-fakitermelesek-terkep/blob/main/docs/fahasznalati-modok.md" target="_blank" rel="noopener">docs/fahasznalati-modok.md</a>.</div>`;
+const openDlg = d => { if(d.showModal) d.showModal(); else d.setAttribute('open',''); };
+document.querySelectorAll('.dlg').forEach(d=>{
+ d.querySelector('.x').addEventListener('click',()=>d.close ? d.close() : d.removeAttribute('open'));
+ d.addEventListener('click',e=>{ if(e.target===d) d.close(); });
+});
+$('srcBtn').addEventListener('click',()=>openDlg($('srcDlg')));
+const gls=$('glsDlg');
+function openGls(id){ gls.querySelectorAll('.hl').forEach(e=>e.classList.remove('hl')); openDlg(gls);
+ const t=id && $('gls-'+id); if(t){ t.classList.add('hl'); t.scrollIntoView({block:'start'}); } else gls.scrollTop=0; }
+$('glsBtn').addEventListener('click',()=>openGls());
 
 function render(){
  const vis=visible(); const visSet=new Set(vis);
@@ -341,6 +397,7 @@ $('legend').addEventListener('change',e=>{ const {k,g}=e.target.dataset;
  syncGroups(); render(); });
 $('legend').addEventListener('click',e=>{ const f=e.target.closest('.fold');
  if(f){ const o=f.getAttribute('aria-expanded')!=='true'; f.setAttribute('aria-expanded',o); f.textContent=o?'▾':'▸'; f.closest('.lg').classList.toggle('closed',!o); return; }
+ const mo=e.target.closest('.more'); if(mo){ e.preventDefault(); openGls(mo.dataset.gls); return; }
  const b=e.target.closest('.info'); if(!b) return; e.preventDefault(); $('d'+b.dataset.d).classList.toggle('open'); });
 $('sources').addEventListener('change',e=>{ const s=e.target.dataset.s; if(!s) return; e.target.checked?activeSrc.add(s):activeSrc.delete(s); render(); if(group.getLayers().length) map.fitBounds(group.getBounds(),{padding:[30,30]}); });
 $('onlyProt').addEventListener('change',render);

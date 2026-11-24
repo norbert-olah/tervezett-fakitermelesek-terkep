@@ -203,6 +203,8 @@ A színminta újragenerálása: `python3 tools/szinminta.py index.html docs/img/
 
 **Magyarázatok.** A `?` alatt csak rövid, közérthető leírás van, link és jogszabályhely nélkül, hogy a doboz ne legyen túlzsúfolt. A források és a jogszabályhelyek ebben a dokumentumban vannak. A csoportoknak is van `?` leírásuk.
 
+**Fogalomtár ablak (#23).** A térképen a „Fahasználati mód” fejléc „Mit jelentenek?” gombja és a `?` dobozok „bővebben” gombja egy közérthető fogalomtárat nyit meg: néhány alapfogalom (záródás, folyamatos erdőborítás, véghasználat, erdőfelújítási kötelezettség, üzemmódok), majd a térképen látható csoportok és módok, módonként kattintható jogszabályhelyekkel. A csoport- és módnevek, a leírások és a jogszabályhelyek a `GROUPS` / `MODES` tömbből jönnek (`j` mező), az alapfogalmak a `CONCEPTS` tömbből; a jogszabályhelyek ennek a dokumentumnak a „Kódok” táblájából. Ha itt változik egy jogszabályhely vagy állítás, az `index.html`-ben is át kell vezetni.
+
 ## Nyitott kérdések
 
 - „Szerkezetátalakítás” és „bontás” (BP Erdő): írásos megerősítés kell a forrástól (#20).
