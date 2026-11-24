@@ -131,7 +131,50 @@ Az „Előfordulás” oszlop a 2026. 11. 23-i importok részletszáma; a „–
 4. **KGH a mai jelentésében.** Mindkét forrás 2026-os adatot közöl, és a 2017. december 29. óta hatályos jelentést használja (a korábbi „szálalás”): a Mecsekerdő mind a 13 KGH-részlete „Örökerdő (szálaló)” üzemmódú, és a nevét is „KGH – Készletgondozó használat (szálalás)” alakban adja; az Egererdő egyetlen KGH-részlete (Cserépváralja 11 A) a NÉBIH szerint `SZÁL` üzemmódú (lekérdezve: 2026. 11. 24.). A régi értelemben vett készletgondozó használat (ma HGY) egyik forrásban sem szerepel. A „KH” és a „szálalás” egyik forrásban sem fordul elő.
 5. **HF, FELK (Mecsekerdő).** Nem szerepelnek a NÉBIH 2018-as és 2019-es kódlistájában. A jelentésüket a Mecsekerdő modelljéből kell kiolvasni, mielőtt hivatalos kódhoz rendelnénk őket.
 
+## Csoportosítás és színek
+
+Döntések (#11), a térképen így jelennek meg a módok (`GROUPS` és `MODES` az `index.html`-ben).
+
+**Összevonás.** A valódi szinonimák (azonos kód, eltérő név, pl. „növekedésfokozó” és „növedékfokozó gyérítés”) már a leképezésben egy kódra kerülnek (l. fent). A térképen kódonként egy jelmagyarázat-sor van.
+
+**Csoportosítás: a térkép céljához igazodik, nem a jogszabályi kategóriákhoz.** A csoport azt mutatja, mennyire erős a beavatkozás, és mi marad utána a területen. Ezért eltér a jogi felosztástól: a szálalóvágás és a bontóvágás jogilag véghasználat, mint a végvágás és a tarvágás, de külön csoportba kerül, mert utána egy ideig még idős erdő áll. A készletgondozó használat pedig nem nevelővágás, mégis az „erdő megmarad” csoportba tartozik, mert folyamatos erdőborítás mellett történik.
+
+| Csoport | Módok (gyengébbtől az erősebbig) | Mi marad a területen |
+|---|---|---|
+| Az erdő megmarad, ritkul | HGY, TI, TKGY, NFGY, KGH | erdő, kevesebb fával |
+| Az idős erdő fokozatosan eltűnik | SZV, FVB | egy ideig idős fák, alattuk fiatal erdő |
+| Az idős erdő eltűnik | FVV, TRV | fiatalos vagy beerdősítendő vágásterület |
+| Egyéb | EÜ, ET, VÁT, haszonvételi módok (ÁP, BEFÁP, FFK, FGÁ, CSK, TK) | esetenként változó, ezért nincs erősség szerinti sorrend |
+| Bizonytalan besorolás | BIZ-BONT, BIZ-SZA, és minden ismeretlen kód | a forrásból nem állapítható meg |
+
+A csoporton belüli sorrend a térkép saját, közelítő sorrendje, nem jogszabályi rangsor. Az első csoportban nagyjából a kivett fák mérete szerint halad (fiatal → idős állomány), a haszonvételi gyérítés a legkisebb erélyű (legfeljebb 5% záródáscsökkenés). A második csoportban a szálalóvágás az elnyújtottabb (30 évnél hosszabb), a bontóvágás legfeljebb 30 év. A harmadikban a végvágás az utolsó lépés, a tarvágás egyszerre termeli ki az egész állományt.
+
+**Színek.** Csoportonként egy árnyalatcsalád, a csoporton belül világos → sötét = gyengébb → erősebb:
+
+- *az erdő megmarad:* kék;
+- *az idős erdő eltűnik* (fokozatosan vagy egyszerre): egyetlen narancs → sötétvörös skála, a fokozatos csoport a világosabb fele;
+- *egyéb:* lila, pontozott körvonallal;
+- *bizonytalan besorolás:* szürke, szaggatott körvonallal; az ismeretlen kód is ide kerül.
+
+Zöld nincs a palettán, mert az erdő a háttértérképen és a műholdképen is zöld. A kitöltés 45%-os, a körvonal teljes színű. A színeket CAM02-UCS színtérben, színtévesztés-szimulációval ellenőriztem, világos és sötét (műholdas) háttéren. A fő különbség (kék kontra narancs–vörös) mindhárom színtévesztés-típusnál megmarad, a csoporton belüli módokat a világosság különbözteti meg. A lila és a kék deuteranópiánál, protanópiánál összemoshat, ezért kapja az egyéb és a bizonytalan csoport körvonalmintát is.
+
+![Színminta](img/szinminta.png)
+
+A színminta újragenerálása: `python3 tools/szinminta.py index.html docs/img/szinminta.png`.
+
+| Kód | Szín | Kód | Szín | Kód | Szín |
+|---|---|---|---|---|---|
+| HGY | `#c6dbef` | SZV | `#fdae6b` | EÜ | `#b2abd2` |
+| TI | `#9ecae1` | FVB | `#f16913` | ET | `#40004b` |
+| TKGY | `#6baed6` | FVV | `#cb181d` | VÁT | `#807dba` |
+| NFGY | `#2171b5` | TRV | `#67000d` | haszonvételi módok | `#bcbddc` |
+| KGH | `#08306b` | BIZ-BONT | `#bdbdbd` | ismeretlen kód | `#969696` |
+| | | BIZ-SZA | `#636363` | | |
+
+**Szűrők.** A jelmagyarázat csoportonként összecsukható; a csoport neve előtti jelölőnégyzet a csoport összes módját ki- vagy bekapcsolja, és részlegesen bekapcsolt állapotot is mutat. Csoportonként és módonként is látszik a részletszám és a terület. Csak az adatokban előforduló csoportok és módok jelennek meg.
+
+**Magyarázatok.** A `?` alatt csak rövid, közérthető leírás van, link és jogszabályhely nélkül, hogy a doboz ne legyen túlzsúfolt. A források és a jogszabályhelyek ebben a dokumentumban vannak. A csoportoknak is van `?` leírásuk.
+
 ## Nyitott kérdések
 
 - „Szerkezetátalakítás” és „bontás” (BP Erdő), HF és FELK (Mecsekerdő): a források saját magyarázatainak átnézése, írásos megerősítés – #20.
-- Csoportosítás és színek – #11. Eddigi döntés: a szálalóvágás a véghasználatok közé kerül, nem a folyamatos erdőborítás csoportba. A most felvett, az adatokban nem szereplő kódok színe ideiglenes.

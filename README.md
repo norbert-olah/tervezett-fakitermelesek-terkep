@@ -64,6 +64,7 @@ data/egererdo.js           Egererdő adatai
 tools/nebih-export.js      konzolscript: erdőrészlet-lista → adatsorok a NÉBIH-ből
 tools/mymaps-kml-export.js konzolscript: Google My Maps → adatsorok (poligonnál geometriával; presetek: Vérteserdő, Egererdő)
 tools/powerbi-export.js    konzolscript: Mecsekerdő Power BI-jelentés → adatsorok (geometriával)
+tools/szinminta.py         a fahasználati módok színmintája (docs/img/szinminta.png)
 ```
 
 Az ikon a Google [Noto Emoji](https://github.com/googlefonts/noto-emoji) készlet „lombhullató fa” (U+1F333) képe, [Apache 2.0](LICENSES/Apache-2.0.txt) licenccel; a részletek a [NOTICE](NOTICE) fájlban. A PNG/ICO változatok így generálhatók újra (librsvg + ImageMagick):
@@ -87,7 +88,7 @@ A NÉBIH WFS-e más oldalról nem hívható (nincs CORS), ezért a lekérés az 
 5. Írd be az importálás dátumát a fájl `importalva` mezőjébe és az **Importálási napló** táblázatba.
 6. Vesd össze a forrás saját védettségi és Natura 2000-adatait (ha közli) a NÉBIH-ével, és az eltéréseket írd az **Ismert eltérések** közé.
 
-A szkriptek a hivatalos kódot és nevet maguktól felismerik. Ha egy forrás ettől eltérő elnevezést használ, azt a szkript `codes` (a `nebih-export.js`-ben `CODES`) táblájában kell a hivatalos kódra fordítani, és felvenni a [fogalomtár](docs/fahasznalati-modok.md) leképezési táblázatába, indoklással. A `MODES` tömb (index.html) minden NÉBIH-kódot tartalmaz; a jelmagyarázatban csak az adatokban előforduló módok jelennek meg. A szkriptek kiírják, ha ismeretlen módot találnak.
+A szkriptek a hivatalos kódot és nevet maguktól felismerik. Ha egy forrás ettől eltérő elnevezést használ, azt a szkript `codes` (a `nebih-export.js`-ben `CODES`) táblájában kell a hivatalos kódra fordítani, és felvenni a [fogalomtár](docs/fahasznalati-modok.md) leképezési táblázatába, indoklással. A `MODES` tömb (index.html) minden NÉBIH-kódot tartalmaz, mindegyiket egy `GROUPS`-beli csoporthoz (a beavatkozás erőssége szerint) és színhez rendelve; a jelmagyarázatban csak az adatokban előforduló módok jelennek meg. Új mód vagy szín esetén a színmintát is újra kell generálni (`tools/szinminta.py`, l. a fogalomtár „Csoportosítás és színek” fejezetét). A szkriptek kiírják, ha ismeretlen módot találnak.
 
 ## Ellenőrzés (CI)
 
