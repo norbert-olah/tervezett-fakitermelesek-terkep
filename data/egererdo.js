@@ -9,6 +9,7 @@ ERDO.add({
  "kml": "https://www.google.com/maps/d/kml?mid=1edFqyqTrWi4-Gdpcgqgje9N7Li-W8Ao&forcekml=1",
  "kozzetett": null,
  "importalva": "2026-11-23",
+ "modleirasok": {"ET": "db755c2f", "EÜ": "55d90c74", "FVB": "5c5d044b", "KGH": "406cbef9", "NFGY": "2ec6d39d,8e1d53ae", "SZV": "fb54efdb", "TI": "b6cbf6c1", "TKGY": "18cc42b1", "TRV": "4f29dde5"},
  "megjegyzes": "Fahasználatok helyei (Google Saját térkép, pontokkal). Geometria, terület, védettség, Natura 2000: NÉBIH Erdőtérkép WFS. Az érintett terület és fatömeg az Egererdő adata.",
  "rows": [
 ["Szomolya 32 H","FVB",null,"Egri körzet",14.05,"Állami tulajdon","Faanyagtermelő","Nem része a hálózatnak","Nem védett terület",62188641,[["{|gcHouf|B_@dCJ@p@Gl@STMn@s@h@a@f@[LKGwA?u@L{B^uCf@{Aj@mAn@s@bAw@`@]`@k@z@c@L_@~@oA|A}AjAuAFKLe@ZsBTmBuAp@w@@sASmCF{Dp@gBDcDOk@MMD]NOFTbAh@nA^tBAl@gAhFy@lEc@vALn@PnC\\`BFbA@~A?L"]],{"Fahasználat a forrás szerint":"Fokozatos felújítóvágás – bontóvágás","Erdészet":"Egri Erdészet"}],

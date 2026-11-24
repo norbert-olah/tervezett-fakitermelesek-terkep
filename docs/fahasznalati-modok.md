@@ -94,6 +94,30 @@ Ha egy forrás elnevezése nem feleltethető meg egyértelműen egy hatósági k
 
 A források saját magyarázatainak átnézése, és a bizonytalan esetek tisztázása: #20.
 
+## A források saját magyarázatai
+
+Ahol egy erdőgazdaság maga is elmagyarázza, mit ért egy-egy módon, azt itt foglalom össze saját szavakkal (#20; átnézve: 2026. 11. 24.). Ezek az erdőgazdaságok saját értelmezései, nem jogforrások. Arra jók, hogy ellenőrizzük a leképezést.
+
+**Egererdő** – a Google Saját térképen minden pontnak van „A beavatkozás célja” mezője. Ez nem részletenként egyedi, hanem módonként egy sablonszöveg (a növedékfokozó gyérítésnél kettő, egy elírásban térnek el).
+- *Fokozatos felújítóvágás – bontóvágás:* az idős erdő 10–30 év alatti, fokozatos megújítása; az erdőborítás közben részben megmarad, az idős fák árnyékában nő fel az újulat. Ez megfelel az FVB-nek (a fokozatos felújítóvágás legfeljebb 30 év), a leképezés megerősítve.
+- *Szálalóvágás:* legalább 30 év alatt, egyszerre csak kisebb részeken; a cél a többkorú erdő. Megfelel az SZV-nek.
+- *Készletgondozó használat:* egy fa vagy kis facsoport (lék) kitermelése folyamatos erdőborítás mellett. Ez a 2017 utáni jelentés, l. a leképezés 4. pontját.
+- *Tarvágás:* főként kiszáradt vagy súlyosan károsodott fenyőállományoknál, őshonosabb fafajokra cserélve, illetve sarjról felújuló állományoknál.
+- *Egyéb termelés:* főként természetvédelmi célú beavatkozás, de lehet örökségvédelmi, közjóléti, tájvédelmi vagy biztonsági célú is.
+- *Tisztítás, törzskiválasztó és növedékfokozó gyérítés, egészségügyi fakitermelés:* a hivatalos jelentéssel egyezik.
+
+**Vérteserdő** – kétféle magyarázat van: a Google Saját térkép „Állománynevelés leírása” mezője (módonként egy sablonszöveg) és a honlapon módonként egy aloldal (az [Aktuális tevékenységeink](https://verteserdo.hu/aktualis-tevekenysegeink/) oldalról).
+- A honlap külön mutatja be a bontóvágást, a végvágást és a szálalóvágást. A [bontóvágás](https://verteserdo.hu/bontovagas) aloldala nem mondja meg, hogy a fokozatos felújítóvágás vagy a szálalóvágás része, ezért a `BO` kód továbbra is bizonytalan besorolású marad.
+- A [szálalóvágás](https://verteserdo.hu/szalalovagas): 30 évnél hosszabb, ismételt beavatkozások, változatos korszerkezettel. Megfelel az SZV-nek.
+- A [tarvágás](https://verteserdo.hu/tarvagas): véghasználat, mesterséges erdősítéssel; például Natura 2000-es területen lévő akácosokban, nemesnyárasokban, és sarjeredetű őshonos erdőkben, ha az idős állomány már nem tud magról felújulni.
+- *Egyéb termelés* (térkép): a balesetveszélyes fák kitermelése mellett ide sorolják az idegenhonos állományok szálalóvágáshoz hasonló, véghasználatnak nem minősülő átalakítását is. Ez a „szerkezetátalakítás” egyik lehetséges hatósági kódja (l. fent).
+
+**Mecsekerdő** – a [honlapon](https://mecsekerdo.hu/fenntarthato-gazdalkodas/erdokezelesunk/) látható magyarázatok a beágyazott Power BI-jelentésből jönnek („Mit jelent a használati mód?” táblázat: kód és név, életszakasz, magyarázat). A honlap statikus szövege és a [fakitermelési technológiai utasítás](https://mecsekerdo.hu/kozerdeku-adatok/fakitermelesi-altalanos-technologiai-es-muveleti-utasitas/) nem határoz meg módokat. A táblázat a NÉBIH-kódokat és -neveket használja, a magyarázatok a hivatalos jelentéssel egyeznek; a KGH-nál zárójelben „(szálalás)”. A táblázat csak az éppen ütemezett módokat mutatja, ezért a **HF** és a **FELK** jelentése innen sem derül ki.
+
+**BP Erdő** – a [listán](https://www.bp-erdo.hu/hu/2026-evben-meg-hatralevo-tervezett-fakitermelesek) nincs magyarázat, és más, a módokat magyarázó oldalt sem találtam. A „bontás” és a „szerkezetátalakítás” hatósági kódja csak tőlük (vagy az illetékes nemzeti park igazgatóságtól) kérdezhető meg írásban.
+
+**Importáláskor:** a `mymaps-kml-export.js` a módonkénti magyarázó szövegek ujjlenyomatát is kiírja, és a `data/verteserdo.js`, `data/egererdo.js` `modleirasok` mezőjében tárolt értékkel összevetve jelzi, ha egy magyarázat megváltozott. A Mecsekerdőnél a Power BI „Mit jelent a használati mód?” táblázatát kell kézzel átnézni. A szövegeket nem tárolom a repóban, csak az ujjlenyomatukat.
+
 ## Leképezés: a források elnevezései → hivatalos kód
 
 A térkép (`MODES` az `index.html`-ben) és az adatfájlok (`data/*.js`, a sor 2. eleme) a hivatalos NÉBIH-kódot használják; a megjelenített név külön mező. Kivétel a bizonytalan besorolás (l. alább). A forrásonkénti fordítás az importszkriptekben van: `tools/nebih-export.js` (`CODES`, a BP Erdő listájához), `tools/mymaps-kml-export.js` (presetenként `codes`), `tools/powerbi-export.js` (`codes`). A szkriptek a hivatalos kódot és a hivatalos nevet (kis- és nagybetűtől függetlenül) maguktól felismerik, ezért a táblában csak az ettől eltérő elnevezéseket kell felsorolni; minden mást ismeretlenként jeleznek, és a CI ellenőrzése is elbukik rajta. Ha a forrás elnevezése eltér a hivatalos kódtól és névtől, a szkriptek a sor `extra` mezőjébe „Fahasználat a forrás szerint” címkével beírják, így a felugró ablakban is látszik, mit közölt a forrás.
@@ -118,7 +142,7 @@ Az „Előfordulás” oszlop a 2026. 11. 23-i importok részletszáma; a „–
 | Mecsekerdő | HGY, VÁT, ÁP, BEFÁP, FFK, FGÁ, CSK, TK | ugyanaz | – | a modellben szerepelnek, az ütemezésben most nem |
 | Mecsekerdő | HF, FELK | – | – | a modellben szerepelnek, de nem NÉBIH-kódok, a jelentésük nem ismert; ha megjelennek, a szkript jelzi, l. 5. |
 | Egererdő | Tisztítás, Törzskiválasztó gyérítés, Növedékfokozó gyérítés, Egészségügyi fakitermelés, Egyéb termelés, Készletgondozó használat, Szálalóvágás, Tarvágás | TI, TKGY, NFGY, EÜ, ET, KGH, SZV, TRV | 6, 27, 25, 3, 1, 1, 6, 9 | a hivatalos nevek; KGH: l. 4. |
-| Egererdő | Fokozatos felújítóvágás – bontóvágás | FVB | 5 | egyértelmű |
+| Egererdő | Fokozatos felújítóvágás – bontóvágás | FVB | 5 | egyértelmű; a saját magyarázatuk (10–30 év, fokozatos megújítás) is ezt erősíti |
 | Egererdő | Fokozatos felújítóvágás – végvágás | FVV | – | feltételezett, a bontóvágás elnevezésének mintájára |
 
 Összesen 427 részlet; az átalakítás előtt és után forrásonként azonos a részletszám és a hektárösszeg (BP Erdő 40 / 241,22 ha, Vérteserdő 98 / 849,56 ha, Mecsekerdő 206 / 1254,53 ha, Egererdő 83 / 834,03 ha).
@@ -177,4 +201,6 @@ A színminta újragenerálása: `python3 tools/szinminta.py index.html docs/img/
 
 ## Nyitott kérdések
 
-- „Szerkezetátalakítás” és „bontás” (BP Erdő), HF és FELK (Mecsekerdő): a források saját magyarázatainak átnézése, írásos megerősítés – #20.
+- „Szerkezetátalakítás” és „bontás” (BP Erdő): írásos megerősítés kell a forrástól (#20).
+- HF és FELK (Mecsekerdő): a jelentésük a nyilvános felületen nem látszik; a Mecsekerdőtől kérdezhető meg, vagy a Power BI-modell `D_Hmod` táblájából olvasható ki (#20).
+- Vérteserdő `BO`: a honlapjuk alapján sem dönthető el, hogy FVB vagy SZV; csak akkor kell tisztázni, ha előfordul.
