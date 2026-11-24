@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 from colorspacious import cspace_convert
 html=open(sys.argv[1],encoding='utf8').read(); out=sys.argv[2]
 G=[(m[0],m[1]) for m in re.findall(r"^ \{k:'([^']+)', n:'([^']+)',",html,re.M)]
-M=re.findall(r"\{k:'([^']+)', g:'([^']+)', n:'([^']+)', c:'(#[0-9a-f]{6})'",html)
+M=re.findall(r"\{k:'([^']+)', g:'([^']+)', n:'([^']+)', c:'(#[0-9a-f]{6})'(?:, lc:'(#[0-9a-f]{6})')?",html)
 DASH={'egy':(3,5),'biz':(10,6)}
 import os
 F=os.environ.get('FONT','/usr/share/fonts/truetype/google-fonts/ofl/sourcesans3/SourceSans3[wght].ttf')
@@ -26,8 +26,8 @@ for gk,gn in G:
     hv=[m for m in ms if m[3]=='#bcbddc']
     ms=[m for m in ms if m[3]!='#bcbddc']
     rows.append(('g',gn))
-    for k,g,n,c in ms: rows.append(('m',(k,g,n,c)))
-    if hv: rows.append(('m',(', '.join(m[0] for m in hv),gk,'haszonvételi módok',hv[0][3])))
+    for k,g,n,c,lc in ms: rows.append(('m',(k,g,n,c,lc)))
+    if hv: rows.append(('m',(', '.join(m[0] for m in hv),gk,'haszonvételi módok',hv[0][3],hv[0][4])))
 NW,SW,RH,HH,TOP=380,120,40,34,46
 W=NW+SW*len(cols)+20; H=TOP+sum(HH if r[0]=='g' else RH for r in rows)+16
 im=Image.new('RGB',(W,H),'white'); d=ImageDraw.Draw(im)
@@ -36,13 +36,13 @@ y=TOP
 for kind,v in rows:
     if kind=='g':
         d.text((10,y+HH/2+2),v,font=fb,fill=(28,38,32),anchor='lm'); y+=HH; continue
-    k,g,n,c=v
+    k,g,n,c,lc=v
     d.text((24,y+RH/2),f"{n}",font=f,fill=(28,38,32),anchor='lm')
     d.text((NW-12,y+RH/2),k,font=fs,fill=(93,107,98),anchor='rm')
     for i,(_,bgk,t) in enumerate(cols):
         x0=NW+i*SW+10; x1=x0+SW-20; y0=y+5; y1=y+RH-5
         bg=BG[bgk]; d.rectangle([x0-6,y0-4,x1+6,y1+4],fill=T(sim(bg,t)))
-        fill=sim(rgb(c)*.45+bg*.55,t); line=T(sim(rgb(c),t))
+        fill=sim(rgb(c)*.45+bg*.55,t); line=T(sim(rgb(lc or c),t))
         d.rectangle([x0,y0,x1,y1],fill=T(fill))
         if g in DASH:
             on,off=DASH[g]

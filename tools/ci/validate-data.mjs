@@ -23,7 +23,7 @@ for (const f of referenced) if (!onDisk.includes(f)) err(`az index.html olyan f�
 // 2. ismert fahasználati módok (hivatalos kódok) az index.html MODES tömbjéből
 const groups = new Set([...html.matchAll(/^ \{k:'([^']+)', n:'[^']+',(?: s:'[^']+',)? d:'/gm)].map(m => m[1]));
 if (!groups.size) err('nem találom a GROUPS tömböt az index.html-ben');
-const modeDefs = [...html.matchAll(/\{k:'([^']+)', g:'([^']+)', n:'[^']+', c:'#[0-9a-f]{6}', d:'/g)];
+const modeDefs = [...html.matchAll(/\{k:'([^']+)', g:'([^']+)', n:'[^']+', c:'#[0-9a-f]{6}'(?:, lc:'#[0-9a-f]{6}')?, d:'/g)];
 const modes = new Set(modeDefs.map(m => m[1]));
 if (!modes.size) err('nem találom a MODES tömböt az index.html-ben');
 if (modes.size !== modeDefs.length) err('MODES: ismétlődő kulcs');

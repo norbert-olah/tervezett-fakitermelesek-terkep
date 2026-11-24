@@ -16,7 +16,7 @@
 :root{--bg:#f6f7f4;--panel:#fff;--ink:#1c2620;--muted:#5d6b62;--line:#dfe4df;--deep:#1f3d2b;--deep2:#2c5640}
 *{box-sizing:border-box;min-width:0}
 html,body{height:100%;margin:0}
-body{font:15px/1.45 "Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);display:grid;grid-template-columns:370px 1fr;overflow:hidden}
+body{font:15px/1.45 "Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);display:grid;grid-template-columns:clamp(370px,36vw,456px) 1fr;overflow:hidden}
 #side{display:flex;flex-direction:column;height:100vh;background:var(--panel);border-right:1px solid var(--line);z-index:500;overflow:hidden}
 header{background:var(--deep);color:#fff;padding:16px 18px 14px;position:relative}
 header h1{font-size:20px;line-height:1.15;margin:0 0 4px;font-weight:700;text-wrap:balance}
@@ -80,7 +80,7 @@ header p{margin:0;font-size:13.5px;color:#cfe0d4}
 #legend .lgh{display:flex;align-items:center;gap:2px}
 #legend .lgh label{font-weight:600;flex:0 1 auto}
 #legend .fold{border:0;background:none;color:var(--muted);cursor:pointer;font-size:14px;width:20px;padding:0;flex:none}
-#legend .lgm{margin-left:20px}
+#legend .lgm{margin-left:50px} /* a csoport jelölőnégyzetétől egy szinttel beljebb: nyílgomb 20 + rés 2 + négyzet 18 + rés 10 */
 #legend .lg.closed .lgm{display:none}
 #legend .lgh + .desc{margin-left:48px}
 .pp .mode i{width:12px;height:12px;border-radius:2px;display:inline-block}
@@ -166,7 +166,7 @@ const GROUPS = [
  {k:'biz', n:'Bizonytalan besorolás', s:'8 5', d:'A forrás elnevezése nem feleltethető meg egyértelműen hatósági kódnak. A leírás megadja, mi jöhet szóba.'}
 ];
 // Fahasználati módok. k: a NÉBIH fakitermelési/haszonvételi kódja, a bizonytalan besorolásúaknál saját BIZ- kulcs
-// (l. docs/fahasznalati-modok.md); g: csoport, n: megjelenített név, c: szín, d: leírás. A sorrend a jelmagyarázat sorrendje;
+// (l. docs/fahasznalati-modok.md); g: csoport, n: megjelenített név, c: szín, lc: körvonalszín, ha eltér a kitöltésétől, d: leírás. A sorrend a jelmagyarázat sorrendje;
 // a jelmagyarázatban csak az adatokban előforduló módok és csoportok jelennek meg.
 const MODES = [
  {k:'HGY', g:'ritk', n:'haszonvételi gyérítés', c:'#c6dbef', d:'Kis erélyű gyérítés: az átlagos záródás legfeljebb 5%-kal csökkenhet, erdőfelújítási kötelezettség nem keletkezik. 2017. december 29. előtt „készletgondozó használat” (KH) volt a neve.'},
@@ -187,8 +187,8 @@ const MODES = [
  {k:'FGÁ', g:'egy', n:'gallygyűjtés, nyesés', c:'#bcbddc', d:'Fekvő gally gyűjtése, elhalt, száraz ág nyesése, törzsnyesés. Haszonvételi mód.'},
  {k:'CSK', g:'egy', n:'cserje kitermelése', c:'#bcbddc', d:'Cserje kitermelése. Haszonvételi mód.'},
  {k:'TK', g:'egy', n:'tuskó termelése', c:'#bcbddc', d:'Tuskó kitermelése. Haszonvételi mód.'},
- {k:'BIZ-BONT', g:'biz', n:'bontás (bontóvágás vagy szálalóvágás)', c:'#bdbdbd', d:'A forrás csak „bontás”-t ír. A hatósági kódlistában „bontó vágás” néven a fokozatos felújítóvágás bontóvágása (FVB) szerepel, ezért valószínűleg az; a szálalóvágás (SZV) is kezdődhet bontóvágással. Mindkettő véghasználat: az idős állományt megritkítják, hogy alatta az újulat megtelepedjen, és erdőfelújítási kötelezettség keletkezik.'},
- {k:'BIZ-SZA', g:'biz', n:'szerkezetátalakítás', c:'#636363', d:'Nem hatósági fakitermelési kód. Az erdőszerkezet-átalakítás az erdőtörvény szerint olyan tevékenység, amely a meglévő erdő természetességi állapotán változtat, például idegenhonos faállományt őshonosra cserél. A forrás nem közli, milyen fakitermelési móddal (pl. tarvágással, fokozatos felújítóvágással vagy egyéb termelésként) történik.'}
+ {k:'BIZ-BONT', g:'biz', n:'bontás (bontóvágás vagy szálalóvágás)', c:'#fff2a8', lc:'#b8a040', d:'A forrás csak „bontás”-t ír. A hatósági kódlistában „bontó vágás” néven a fokozatos felújítóvágás bontóvágása (FVB) szerepel, ezért valószínűleg az; a szálalóvágás (SZV) is kezdődhet bontóvágással. Mindkettő véghasználat: az idős állományt megritkítják, hogy alatta az újulat megtelepedjen, és erdőfelújítási kötelezettség keletkezik.'},
+ {k:'BIZ-SZA', g:'biz', n:'szerkezetátalakítás', c:'#ffe14d', lc:'#9c7f00', d:'Nem hatósági fakitermelési kód. Az erdőszerkezet-átalakítás az erdőtörvény szerint olyan tevékenység, amely a meglévő erdő természetességi állapotán változtat, például idegenhonos faállományt őshonosra cserél. A forrás nem közli, milyen fakitermelési móddal (pl. tarvágással, fokozatos felújítóvágással vagy egyéb termelésként) történik.'}
 ];
 const modeOf = k => MODES.find(m => m.k === k) || {k, g:'biz', n:`ismeretlen mód (${k})`, c:'#969696', d:'Ez a mód nem szerepel a térkép kódlistájában.'};
 const groupOf = k => GROUPS.find(g => g.k === k);
@@ -227,8 +227,10 @@ map.on('baselayerchange',e=>{ try{localStorage.setItem('erdo-base',e.name)}catch
 const offModes = new Set();   // kikapcsolt módok (az ismeretlen kódok is szűrhetők)
 const activeSrc = new Set(SRC.map(s=>s.id));
 const dashOf = m => (groupOf(m.g)||{}).s || null;
-const style = f => { const m=modeOf(f.haszn), c=m.c; return {color:c,weight:2,dashArray:dashOf(m),fillColor:c,fillOpacity:.45}; };
-const sw = m => `<span class="sw" style="background:${m.c}80;border-color:${m.c};border-style:${dashOf(m)?(m.g==='egy'?'dotted':'dashed'):'solid'}"></span>`;
+// Vonal a zoomhoz igazítva: 14-es zoomtól 2 px, 13-on 1,5, 12 alatt 1 px; 13 alatt folytonos, mert távolról a szaggatás csak zaj.
+const lineW = z => 2*Math.min(1,Math.max(.5,(z-10)/4));
+const style = f => { const m=modeOf(f.haszn), c=m.c, z=map.getZoom(); return {color:m.lc||c,weight:lineW(z),dashArray:z<13?null:dashOf(m),fillColor:c,fillOpacity:.45}; };
+const sw = m => `<span class="sw" style="background:${m.c}80;border-color:${m.lc||m.c};border-style:${dashOf(m)?(m.g==='egy'?'dotted':'dashed'):'solid'}"></span>`;
 const fmt = n => n==null ? '–' : n.toLocaleString('hu-HU',{minimumFractionDigits:2,maximumFractionDigits:2});
 const esc = s => String(s??'–').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const dt = s => s ? s.replace(/-/g,'. ')+'.' : '';
@@ -239,7 +241,7 @@ const SRCNAME='Fahasználat a forrás szerint';   // extra mező: a forrás saj�
 function popupHtml(f){ const m=modeOf(f.haszn); const c=f.layer.getBounds().getCenter();
  const la=c.lat.toFixed(5), lo=c.lng.toFixed(5);
  return `<div class="pp"><h3>${esc(f.hely)} ${f.tag}/${esc(f.res)}</h3>
- <div class="mode"><i style="background:${m.c}"></i>${esc(m.n)} <small>(${m.g==='biz'?'bizonytalan besorolás':esc(m.k)})</small></div>
+ <div class="mode"><i style="background:${m.c};box-shadow:inset 0 0 0 1px ${m.lc||m.c}"></i>${esc(m.n)} <small>(${m.g==='biz'?'bizonytalan besorolás':esc(m.k)})</small></div>
  <table>
  <tr><td>Erdőgazdaság</td><td>${esc(f.src.nev)}</td></tr>
  ${f.x[SRCNAME]?`<tr><td>${SRCNAME}</td><td>${esc(f.x[SRCNAME])}</td></tr>`:''}
@@ -284,14 +286,15 @@ const visible = () => F.filter(f=>baseFilter(f) && !offModes.has(f.haszn));
 function updateLabels(){ labels.clearLayers(); if(map.getZoom()<14) return; const b=map.getBounds();
  visible().forEach(f=>{ if(b.intersects(f.layer.getBounds())) labels.addLayer(f.label); }); }
 map.on('zoomend moveend',updateLabels);
+map.on('zoomend',()=>F.forEach(f=>f.layer.setStyle(Object.assign(style(f), selected===f?{weight:4,color:'#111'}:{}))));
 
 // Szűrők felépítése
 $('sources').innerHTML = SRC.map(s=>`<label><input type="checkbox" checked data-s="${esc(s.id)}"><span>${esc(s.nev)}<a href="${esc(s.url)}" target="_blank" rel="noopener">forrás</a></span><span class="n" data-sn="${esc(s.id)}"></span></label>`).join('');
-// Jelmagyarázat: csoportonként összecsukható, csoport- és módszintű ki/be kapcsolással; csak az előforduló módok
+// Jelmagyarázat: csoportonként összecsukható (alapból összecsukva), csoport- és módszintű ki/be kapcsolással; csak az előforduló módok
 const usedModes = [...MODES.filter(m=>F.some(f=>f.haszn===m.k)), ...[...new Set(F.map(f=>f.haszn))].filter(k=>!MODES.some(m=>m.k===k)).map(modeOf)];
 const usedGroups = GROUPS.filter(g=>usedModes.some(m=>m.g===g.k));
 $('legend').innerHTML = usedGroups.map((g,gi)=>{ const ms=usedModes.filter(m=>m.g===g.k);
- return `<div class="lg" data-lg="${g.k}"><div class="lgh"><button class="fold" type="button" aria-expanded="true" aria-label="Csoport be- vagy kicsukása">▾</button>`+
+ return `<div class="lg closed" data-lg="${g.k}"><div class="lgh"><button class="fold" type="button" aria-expanded="false" aria-label="Csoport be- vagy kicsukása">▸</button>`+
   `<label><input type="checkbox" checked data-g="${g.k}">${esc(g.n)}</label>`+
   `<button class="info" type="button" data-d="g${gi}" aria-label="Mit jelent?">?</button><span class="n" data-gn="${g.k}"></span></div>`+
   `<div class="desc" id="dg${gi}">${esc(g.d)}</div><div class="lgm">`+

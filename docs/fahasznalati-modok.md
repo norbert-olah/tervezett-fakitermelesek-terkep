@@ -178,9 +178,13 @@ A csoporton belüli sorrend a térkép saját, közelítő sorrendje, nem jogsza
 - *az erdő megmarad:* kék;
 - *az idős erdő eltűnik* (fokozatosan vagy egyszerre): egyetlen narancs → sötétvörös skála, a fokozatos csoport a világosabb fele;
 - *egyéb:* lila, pontozott körvonallal;
-- *bizonytalan besorolás:* szürke, szaggatott körvonallal; az ismeretlen kód is ide kerül.
+- *bizonytalan besorolás:* sárga, szaggatott, sötétebb okker körvonallal; az ismeretlen kód is ide kerül, szürkén.
 
-Zöld nincs a palettán, mert az erdő a háttértérképen és a műholdképen is zöld. A kitöltés 45%-os, a körvonal teljes színű. A színeket CAM02-UCS színtérben, színtévesztés-szimulációval ellenőriztem, világos és sötét (műholdas) háttéren. A fő különbség (kék kontra narancs–vörös) mindhárom színtévesztés-típusnál megmarad, a csoporton belüli módokat a világosság különbözteti meg. A lila és a kék deuteranópiánál, protanópiánál összemoshat, ezért kapja az egyéb és a bizonytalan csoport körvonalmintát is.
+Zöld nincs a palettán, mert az erdő a háttértérképen és a műholdképen is zöld. A kitöltés 45%-os, a körvonal teljes színű; a bizonytalan csoport körvonala a kitöltésnél sötétebb okker, hogy a sárga vonal távolról ne világítson ki a többi közül. A színeket CAM02-UCS színtérben, színtévesztés-szimulációval ellenőriztem, világos és sötét (műholdas) háttéren. A fő különbség (kék kontra narancs–vörös) mindhárom színtévesztés-típusnál megmarad, a csoporton belüli módokat a világosság különbözteti meg. A lila és a kék deuteranópiánál, protanópiánál összemoshat, ezért kapja az egyéb és a bizonytalan csoport körvonalmintát is.
+
+**Miért nem szürke a bizonytalan csoport (#25).** Eredetileg szürke volt (`#bdbdbd`, `#636363`). A műholdképen a semleges szürke a zöld növényzet között lilásnak hatott (szimultán kontraszt), és a sötét fenyvesen alig vált el; a Neszmély 22 C és 22 G részleten ez jól látszott. Esri műholdképen kipróbált változatok közül (világosszürke, fehér és fekete–fehér sraffozás, csak körvonal, sárga) a sárga kitöltés sötét okker körvonallal vált be a legjobban. A sárga közel esik a szálalóvágás világos narancsához (`#fdae6b`), de a bizonytalan csoport szaggatott körvonala megkülönbözteti.
+
+**Vonalvastagság.** A körvonal a zoomhoz igazodik: 14-es zoomtól 2 px, 13-on 1,5 px, 12 alatt 1 px, és 13 alatt folytonos, mert távolról a szaggatás csak zajt ad, a vastag vonal pedig a kis részleteket túlhangsúlyozza.
 
 ![Színminta](img/szinminta.png)
 
@@ -192,8 +196,8 @@ A színminta újragenerálása: `python3 tools/szinminta.py index.html docs/img/
 | TI | `#9ecae1` | FVB | `#f16913` | ET | `#40004b` |
 | TKGY | `#6baed6` | FVV | `#cb181d` | VÁT | `#807dba` |
 | NFGY | `#2171b5` | TRV | `#67000d` | haszonvételi módok | `#bcbddc` |
-| KGH | `#08306b` | BIZ-BONT | `#bdbdbd` | ismeretlen kód | `#969696` |
-| | | BIZ-SZA | `#636363` | | |
+| KGH | `#08306b` | BIZ-BONT | `#fff2a8`, körvonal `#b8a040` | ismeretlen kód | `#969696` |
+| | | BIZ-SZA | `#ffe14d`, körvonal `#9c7f00` | | |
 
 **Szűrők.** A jelmagyarázat csoportonként összecsukható; a csoport neve előtti jelölőnégyzet a csoport összes módját ki- vagy bekapcsolja, és részlegesen bekapcsolt állapotot is mutat. Csoportonként és módonként is látszik a részletszám és a terület. Csak az adatokban előforduló csoportok és módok jelennek meg.
 
