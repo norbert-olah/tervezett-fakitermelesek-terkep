@@ -162,7 +162,7 @@ header p{margin:0;font-size:13.5px;color:#cfe0d4}
  <div class="sc"><ul id="srcList"></ul>
  <div class="legal">
   <p><b>Nem hivatalos oldal.</b> Tájékoztató jellegű összesítés a fenti forrásokból; az adatok hibásak vagy elavultak lehetnek, a tényleges munkák eltérhetnek. Mértékadó mindig az eredeti forrás. Az oldal használatából eredő károkért felelősséget nem vállalok.</p>
-  <p><b>Adatvédelem:</b> az oldal nem használ sütit és nem gyűjt adatot; csak a választott háttértérképet jegyzi meg a böngésződben. A térképcsempék betöltésekor az IP-címed a csempeszolgáltatóhoz (Esri, ill. a választott OpenStreetMap / OpenTopoMap, NÉBIH) jut, az oldalt a GitHub Pages szolgálja ki.</p>
+  <p><b>Adatvédelem:</b> az oldal nem használ sütit és nem gyűjt adatot; csak a választott háttértérképet jegyzi meg a böngésződben. A térképcsempék betöltésekor az IP-címed a csempeszolgáltatóhoz (Esri, ill. a választott OpenStreetMap / OpenTopoMap, NÉBIH, OpenStreetMap.hu) jut, az oldalt a GitHub Pages szolgálja ki.</p>
   <p>Kód: <a href="https://github.com/norbert-olah/tervezett-fakitermelesek-terkep/blob/main/LICENSE" target="_blank" rel="noopener">MIT licenc</a> · Ikon: Noto Emoji (Google, Apache 2.0) · Térképkönyvtár: Leaflet (BSD-2)</p>
  </div></div>
 </dialog>
@@ -266,8 +266,9 @@ let baseName = 'Térkép (Esri Topo)';
 try{ const s=localStorage.getItem('erdo-base'); if(s && base[s]) baseName=s; }catch(e){}
 base[baseName].addTo(map);
 const nebih = L.tileLayer.wms('https://erdoterkep.nebih.gov.hu/geoserver/nebih/wms',{layers:'KUL_RESZLET_VW',format:'image/png',transparent:true,version:'1.1.1',minZoom:12,maxZoom:20,opacity:.8,attribution:'Erdőrészletek: NÉBIH Erdőtérkép'});
+const turistautak = L.tileLayer('https://{s}.tile.openstreetmap.hu/tt/{z}/{x}/{y}.png',{maxNativeZoom:17,maxZoom:19,opacity:.9,attribution:'Turistautak: © <a href="https://turistautak.openstreetmap.hu/" target="_blank" rel="noopener">OpenStreetMap.hu</a> (<a href="https://hdyc.neis-one.org/?Domcsi" target="_blank" rel="noopener">Dömcsi</a>), © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OSM</a> (ODbL)'});
 const labels = L.layerGroup();
-L.control.layers(base,{'Összes erdőrészlet határa (NÉBIH)':nebih,'Részletjelek':labels},{collapsed:true}).addTo(map);
+L.control.layers(base,{'Turistautak (OpenStreetMap.hu)':turistautak,'Összes erdőrészlet határa (NÉBIH)':nebih,'Részletjelek':labels},{collapsed:true}).addTo(map);
 L.control.scale({imperial:false}).addTo(map);
 map.on('baselayerchange',e=>{ try{localStorage.setItem('erdo-base',e.name)}catch(_){} });
 
@@ -350,7 +351,9 @@ $('legend').innerHTML = usedGroups.map((g,gi)=>{ const ms=usedModes.filter(m=>m.
 $('srcList').innerHTML = SRC.map(s=>`<li><b>${esc(s.nev)}</b> · <span class="meta">${s.rows.length} erdőrészlet</span><br><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.url)}</a><br>
  <span class="meta"><span>Közzétéve: ${dt(s.kozzetett)||'nincs megadva'}</span> · <span>Letöltve és importálva: ${dt(s.importalva)}</span></span></li>`).join('') +
  `<li><b>NÉBIH Erdőtérkép</b><br><a href="https://erdoterkep.nebih.gov.hu/" target="_blank" rel="noopener">https://erdoterkep.nebih.gov.hu/</a><br>
- <span class="meta">Részlethatárok, terület, védettség, Natura 2000, rendeltetés; élő WMS-réteg</span></li>`;
+ <span class="meta">Részlethatárok, terület, védettség, Natura 2000, rendeltetés; élő WMS-réteg</span></li>` +
+ `<li><b>Turistautak (OpenStreetMap.hu)</b><br><a href="https://turistautak.openstreetmap.hu/" target="_blank" rel="noopener">https://turistautak.openstreetmap.hu/</a><br>
+ <span class="meta">Jelzett turistautak csemperétege (© OpenStreetMap közreműködők, ODbL; render: Dömcsi)</span></li>`;
 // Fogalomtár: alapfogalmak, majd a térképen látható csoportok és módok (nevek, leírások a GROUPS / MODES tömbből)
 $('glsBody').innerHTML = `<p>A térkép a fakitermeléseket aszerint csoportosítja, mennyire erős a beavatkozás, és mi marad utána a területen. Ez a térkép saját felosztása, nem jogszabályi kategória: például a szálalóvágás jogilag ugyanúgy véghasználat, mint a tarvágás. A módok neve és kódja – a bizonytalan besorolásúak kivételével – a hatósági (NÉBIH) bejelentésben használt név és kód. A hivatkozások a jogszabály vonatkozó pontjára vagy a hatósági útmutatóra mutatnak; mértékadó mindig a hatályos jogszabályszöveg.</p>
  <h3>Alapfogalmak</h3><dl>${CONCEPTS.map(c=>`<dt>${esc(c.n)}</dt><dd>${c.h?c.d:esc(c.d)} ${refsHtml(c.j)}</dd>`).join('')}</dl>

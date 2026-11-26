@@ -23,11 +23,11 @@ async function run(label, viewport) {
   const pageErrors = [], consoleErrors = [];
   page.on('pageerror', e => pageErrors.push(e.message));
   page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
-  // A háttércsempék és a NÉBIH WMS külső szolgáltatás: kiesésük ne buktassa a tesztet.
-  await page.route(/arcgisonline\.com|openstreetmap\.org|opentopomap\.org|nebih\.gov\.hu/, r => r.abort());
+  // A háttércsempék, a NÉBIH WMS és a turistaút-réteg külső szolgáltatás: kiesésük ne buktassa a tesztet.
+  await page.route(/arcgisonline\.com|openstreetmap\.(org|hu)|opentopomap\.org|nebih\.gov\.hu/, r => r.abort());
   // Minden más külső kérés hiba: az oldalnak a saját fájljain kívül csak a térképcsempékhez szabad kimennie.
   const external = [];
-  page.on('request', r => { const u = new URL(r.url()); if (!['localhost', '127.0.0.1'].includes(u.hostname) && !/arcgisonline\.com|openstreetmap\.org|opentopomap\.org|nebih\.gov\.hu/.test(u.hostname) && !u.protocol.startsWith('data')) external.push(u.hostname); });
+  page.on('request', r => { const u = new URL(r.url()); if (!['localhost', '127.0.0.1'].includes(u.hostname) && !/arcgisonline\.com|openstreetmap\.(org|hu)|opentopomap\.org|nebih\.gov\.hu/.test(u.hostname) && !u.protocol.startsWith('data')) external.push(u.hostname); });
 
   const resp = await page.goto(BASE, { waitUntil: 'load' });
   check(resp && resp.ok(), `index.html betölt (HTTP ${resp && resp.status()})`);
@@ -73,7 +73,7 @@ async function run(label, viewport) {
   check(!overflow, 'a névjegy doboz tartalma nem lóg ki vízszintesen');
   await page.click('#srcBtn');
   const srcItems = await page.locator('#srcDlg[open] #srcList li').count();
-  check(srcItems === ERDO.sources.length + 1, `a Források ablakban ${ERDO.sources.length} forrás + NÉBIH van (talált: ${srcItems})`);
+  check(srcItems === ERDO.sources.length + 2, `a Források ablakban ${ERDO.sources.length} forrás + NÉBIH + Turistautak van (talált: ${srcItems})`);
   await page.keyboard.press('Escape');
 
   // Fogalomtár: a jelmagyarázat fejlécéből megnyílik, minden látható mód szerepel benne, a hivatkozások linkek, nem lóg ki

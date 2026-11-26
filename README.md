@@ -143,6 +143,7 @@ Ez nem hivatalos oldal, nem kapcsolódik az érintett erdőgazdaságokhoz és a 
 Az oldal nem használ sütit, nincs rajta analitika vagy követés, és nem gyűjt adatot. A böngésző helyi tárolójában (`localStorage`) csak a választott háttértérkép neve marad meg, ez nem kerül sehova. Minden script, stílus és betűtípus a repóból töltődik be. Külső szolgáltatóhoz csak a térkép betöltésekor megy kérés, és ezzel a látogató IP-címe is:
 - háttércsempék: Esri (alapértelmezett), illetve választás szerint OpenStreetMap, OpenTopoMap;
 - a bekapcsolható erdőrészlet-réteg: NÉBIH Erdőtérkép;
+- a bekapcsolható turistaút-réteg: OpenStreetMap.hu;
 - az oldalt magát a GitHub Pages szolgálja ki.
 
 A CI ellenőrzi, hogy ne kerüljön be új külső script, stílus vagy betűtípus.
