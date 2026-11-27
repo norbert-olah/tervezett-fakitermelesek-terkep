@@ -112,42 +112,83 @@ header p{margin:0;font-size:13.5px;color:#cfe0d4}
 .pp .links{margin-top:8px;display:flex;gap:12px;flex-wrap:wrap}
 .lbl{background:rgba(255,255,255,.85);border:0;box-shadow:none;font:600 11.5px "Source Sans 3",sans-serif;padding:0 3px;color:#1c2620}
 .lbl::before{display:none}
-#toggle{display:none}
+#handle,#fltBtn{display:none}
 @media(max-width:760px){
- body{grid-template-columns:1fr;grid-template-rows:1fr}
- #map{height:100vh;grid-row:1;grid-column:1}
- #side{grid-row:1;grid-column:1;align-self:end;height:auto;max-height:46vh;border-right:0;border-top:1px solid var(--line);box-shadow:0 -4px 16px rgba(0,0,0,.15);transition:max-height .25s;z-index:1000}
- #side.full{max-height:88vh}
- #toggle{display:block;position:absolute;right:12px;top:10px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:6px;font:inherit;font-size:14px;padding:6px 10px;min-height:36px;cursor:pointer}
- header{padding-right:110px}
- .leaflet-bottom{bottom:var(--sheet-h,0px)}
- #about{gap:10px}
+ /* Mobilon húzható alsó lap három állással (data-state): peek = csak a tömör fejléc, half = fél képernyő, full = majdnem teljes.
+    A 100vh a mobilböngészők címsora miatt magasabb a látható résznél, ezért ahol lehet, dvh. */
+ body{grid-template-columns:1fr;grid-template-rows:1fr;height:100vh;height:100dvh}
+ /* A térkép a lap csúcs állása fölött ér véget (--bar-h), így a nagyítás és a vezérlők a teljes látható részt használják. */
+ #map{height:auto;margin-bottom:var(--bar-h,0px);grid-row:1;grid-column:1}
+ #side{grid-row:1;grid-column:1;align-self:end;height:var(--bar-h,80px);border-right:0;border-top:1px solid var(--line);border-radius:12px 12px 0 0;box-shadow:0 -4px 16px rgba(0,0,0,.15);transition:height .25s;z-index:1000}
+ #side[data-state=half]{height:50vh;height:50dvh}
+ #side[data-state=full]{height:calc(100vh - 48px);height:calc(100dvh - 48px)}
+ #side.drag{transition:none}
+ #side[data-state=peek] #scroll{visibility:hidden;transition:visibility 0s .25s}
+ #side.drag #scroll{visibility:visible;transition:none}   /* csúcs állásból felhúzva is látszódjon a tartalom már húzás közben */
+ header{flex:none;padding:0 14px 9px;border-radius:12px 12px 0 0;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+ #handle{display:flex;justify-content:center;align-items:center;width:calc(100% + 28px);height:20px;margin:0 -14px;padding:0;border:0;background:none;cursor:grab}
+ #handle span{width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.55)}
+ #handle:focus-visible{outline:2px solid #fff;outline-offset:-3px}
+ header h1{font-size:17px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ header p{display:none}
+ #stats{margin-top:2px;gap:6px 14px;flex-wrap:wrap}
+ #stats div{display:flex;align-items:baseline;gap:4px;white-space:nowrap}
+ #stats b{display:inline;font-size:16px}
+ /* A térkép saját rétegrendet kap, hogy a Leaflet vezérlői (z-index 1000) és popupja ne rajzolódjanak a lap fölé. */
+ #map{position:relative;z-index:0}
+ /* Kisebb popup mobilon, hogy több férjen el belőle a térképen */
+ .leaflet-popup-content{font-size:13px;margin:10px 12px;min-width:210px}
+ .pp h3{font-size:15px}
+ .pp .mode{margin:1px 0 6px}
+ .pp table{font-size:12px}
+ .pp td:first-child{padding-right:8px}
+ .pp .links{margin-top:6px}
+ /* A lista kerül előre: tapadó sor a keresőmezővel és a „Szűrők” gombbal, alatta az összecsukható szűrők,
+    a lista, végül a névjegy (a JS költözteti ide). */
+ #scroll{display:flex;flex-direction:column;--qh:57px}
+ #scroll>*{flex:none}
+ .qsec{order:-1;position:sticky;top:0;z-index:3;background:var(--panel);height:var(--qh);padding:8px 14px;display:flex;gap:8px}
+ #q{flex:1;height:40px;padding:6px 11px}
+ #fltBtn{flex:none;display:flex;align-items:center;gap:4px;height:40px;font:inherit;font-size:14px;font-weight:600;color:var(--deep);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:0 10px;cursor:pointer;white-space:nowrap}
+ #fltBtn .c:not(:empty){font-size:12.5px;font-weight:700;color:#fff;background:var(--deep2);border-radius:9px;min-width:18px;padding:0 5px;text-align:center}
+ #fltBtn::after{content:"▾";color:var(--muted)}
+ #fltBtn[aria-expanded=true]{background:#eef3ee}
+ #fltBtn[aria-expanded=true]::after{content:"▴"}
+ #filters{order:0;display:none;border-bottom:2px solid var(--line)}
+ #filters.open{display:block}
+ #list{order:1}
+ .org{top:var(--qh)}
+ .sec,.item,.grp,.org{padding-left:14px;padding-right:14px}
+ #about{order:2;gap:10px;margin-top:auto}
 }
-@media(prefers-reduced-motion:reduce){#side{transition:none}}
+@media(prefers-reduced-motion:reduce){#side,#side[data-state=peek] #scroll{transition:none}}
 </style>
 </head>
 <body>
-<aside id="side">
+<aside id="side" data-state="peek">
  <header>
+  <button id="handle" type="button" aria-label="Lista panel: összecsukva. Koppintással nagyobbra nyílik."><span></span></button>
   <h1>Tervezett fakitermelések térképe</h1>
   <p>Állami erdőgazdaságok által közzétett fahasználatok, erdőrészletenként</p>
   <div id="stats"></div>
-  <button id="toggle" type="button" aria-expanded="false">Lista ▲</button>
  </header>
  <div id="scroll">
-  <div class="sec">
-   <h2>Erdőgazdaság</h2>
-   <div class="chk src" id="sources"></div>
+  <div id="filters">
+   <div class="sec">
+    <h2>Erdőgazdaság</h2>
+    <div class="chk src" id="sources"></div>
+   </div>
+   <div class="sec">
+    <h2>Fahasználati mód<button class="hlink" id="glsBtn" type="button" aria-haspopup="dialog">Mit jelentenek?</button></h2>
+    <div class="chk" id="legend"></div>
+   </div>
+   <div class="sec chk">
+    <label><input type="checkbox" id="onlyProt">Csak védett természeti területen</label>
+   </div>
   </div>
-  <div class="sec">
-   <h2>Fahasználati mód<button class="hlink" id="glsBtn" type="button" aria-haspopup="dialog">Mit jelentenek?</button></h2>
-   <div class="chk" id="legend"></div>
-  </div>
-  <div class="sec chk">
-   <label><input type="checkbox" id="onlyProt">Csak védett természeti területen</label>
-  </div>
-  <div class="sec">
+  <div class="sec qsec">
    <input id="q" type="search" placeholder="Keresés: település vagy részlet, pl. Gánt 5" autocomplete="off" aria-label="Keresés">
+   <button id="fltBtn" type="button" aria-expanded="false" aria-controls="filters">Szűrők<span class="c"></span></button>
   </div>
   <div id="list"></div>
  </div>
@@ -307,23 +348,34 @@ function popupHtml(f){ const m=modeOf(f.haszn); const c=f.layer.getBounds().getC
 const group = L.featureGroup().addTo(map);
 F.forEach(f=>{
  f.layer = L.polygon(f.latlngs, style(f));
- f.layer.bindPopup(()=>popupHtml(f),{maxWidth:330});
  f.layer.bindTooltip(`${f.hely} ${f.tag}/${f.res} – ${modeOf(f.haszn).n}`,{sticky:true});
  f.layer.on('mouseover',()=>f.layer.setStyle({weight:4,fillOpacity:.6}));
  f.layer.on('mouseout',()=>f.layer.setStyle(Object.assign(style(f), selected===f?{weight:4,color:'#111'}:{})));
- f.layer.on('click',()=>select(f,false));
+ f.layer.on('click',e=>select(f,false,e.latlng));
  f.label = L.tooltip({permanent:true,direction:'center',className:'lbl'}).setContent(`${f.tag}/${f.res}`).setLatLng(f.layer.getBounds().getCenter());
 });
 labels.addTo(map);
 
-function select(f,zoom){
+// A részlet adatai Leaflet popupban. Mobilon a lap ilyenkor csúcs állásba csukódik, hogy a popupnak a teljes térkép jusson,
+// és a popup legfeljebb a térkép magasságáig nő (a többi görgethető benne).
+let pop=null;
+function select(f,zoom,ll){
+ const old=pop; pop=null; if(old) map.closePopup(old);   // pop=null előbb, hogy a popupclose ne a most kijelöltet szüntesse meg
  if(selected && selected!==f) selected.layer.setStyle(style(selected));
  selected=f; f.layer.setStyle({weight:4,color:'#111'}); f.layer.bringToFront();
- if(zoom){ map.fitBounds(f.layer.getBounds(),{maxZoom:16,padding:[40,40]}); f.layer.openPopup(f.layer.getBounds().getCenter()); }
+ if(mq.matches) setState('peek');
+ if(zoom) map.fitBounds(f.layer.getBounds(),{maxZoom:16,padding:[40,40]});
+ const opt={maxWidth:330}; if(mq.matches) opt.maxHeight=Math.max(200,map.getSize().y-70);
+ pop=L.popup(opt).setLatLng(ll||f.layer.getBounds().getCenter()).setContent(popupHtml(f)).openOn(map);
+ f.layer.closeTooltip();   // érintésre a buborék is megnyílna, de a popup mellett felesleges
+
  document.querySelectorAll('.item').forEach(b=>b.classList.toggle('sel',+b.dataset.i===f.idx));
  const el=document.querySelector(`.item[data-i="${f.idx}"]`); if(el && !zoom) el.scrollIntoView({block:'nearest'});
 }
-map.on('popupclose',()=>{ if(selected){ selected.layer.setStyle(style(selected)); selected=null; document.querySelectorAll('.item.sel').forEach(b=>b.classList.remove('sel')); }});
+function deselect(){
+ if(selected){ selected.layer.setStyle(style(selected)); selected=null; document.querySelectorAll('.item.sel').forEach(b=>b.classList.remove('sel')); }
+}
+map.on('popupclose',e=>{ if(e.popup===pop){ pop=null; deselect(); } });
 
 const $ = id => document.getElementById(id);
 function baseFilter(f){ const q=$('q').value.trim().toLowerCase().replace(/\s+/g,' ');
@@ -380,6 +432,10 @@ function render(){
  usedModes.forEach(m=>{ const fs=bf.filter(f=>f.haszn===m.k); document.querySelector(`[data-mn="${m.k}"]`).textContent=`${fs.length} db · ${fmt(sum(fs))} ha`; });
  usedGroups.forEach(g=>{ const fs=bf.filter(f=>modeOf(f.haszn).g===g.k); document.querySelector(`[data-gn="${g.k}"]`).textContent=`${fs.length} db · ${Math.round(sum(fs)).toLocaleString('hu-HU')} ha`; });
  SRC.forEach(s=>{ const fs=F.filter(f=>f.src===s); document.querySelector(`[data-sn="${s.id}"]`).textContent=`${fs.length} db`; });
+ // mobilon a „Szűrők” gomb jelvénye mutatja, hány szűrő tér el az alapállástól (kikapcsolt forrás/mód, „csak védett”)
+ const off=SRC.length-activeSrc.size+usedModes.filter(m=>offModes.has(m.k)).length, n=off+($('onlyProt').checked?1:0);
+ $('fltBtn').querySelector('.c').textContent=n||'';
+ $('fltBtn').setAttribute('aria-label',n?`Szűrők: ${[off?`${off} kikapcsolva`:'',$('onlyProt').checked?'csak védett':''].filter(Boolean).join(', ')}`:'Szűrők');
  let html='';
  SRC.filter(s=>activeSrc.has(s.id)).forEach(s=>{
   const sv=vis.filter(f=>f.src===s); if(!sv.length) return;
@@ -405,19 +461,70 @@ $('legend').addEventListener('click',e=>{ const f=e.target.closest('.fold');
  if(f){ const o=f.getAttribute('aria-expanded')!=='true'; f.setAttribute('aria-expanded',o); f.textContent=o?'▾':'▸'; f.closest('.lg').classList.toggle('closed',!o); return; }
  const mo=e.target.closest('.more'); if(mo){ e.preventDefault(); openGls(mo.dataset.gls); return; }
  const b=e.target.closest('.info'); if(!b) return; e.preventDefault(); $('d'+b.dataset.d).classList.toggle('open'); });
-$('sources').addEventListener('change',e=>{ const s=e.target.dataset.s; if(!s) return; e.target.checked?activeSrc.add(s):activeSrc.delete(s); render(); if(group.getLayers().length) map.fitBounds(group.getBounds(),{padding:[30,30]}); });
+$('sources').addEventListener('change',e=>{ const s=e.target.dataset.s; if(!s) return; e.target.checked?activeSrc.add(s):activeSrc.delete(s); render(); fitAll(); });
+// Az összes látható részletre nagyít; mobilon a nyitott lap által takart sávot kihagyja (a térkép csak a csúcs állású lapig ér).
+function fitAll(){ if(!group.getLayers().length) return;
+ const cov=mq.matches&&state==='half'?Math.max(0,heights().half-barH):0;   // teljes állásnál úgysem látszik a térkép: lecsukáskor legyen jó
+ map.fitBounds(group.getBounds(),{paddingTopLeft:[30,30],paddingBottomRight:[30,30+cov]}); }
 $('onlyProt').addEventListener('change',render);
 $('q').addEventListener('input',render);
-const side=$('side'), tog=$('toggle');
-$('list').addEventListener('click',e=>{ const b=e.target.closest('.item'); if(!b) return; select(F[+b.dataset.i],true); if(innerWidth<=760){ side.classList.remove('full'); tog.setAttribute('aria-expanded','false'); tog.textContent='Lista ▲'; }});
-tog.addEventListener('click',()=>{ const o=side.classList.toggle('full'); tog.setAttribute('aria-expanded',o); tog.textContent=o?'Térkép ▼':'Lista ▲'; });
-// Mobilon a térkép alsó vezérlői (forrásfelirat, méretarány) a lista fölött legyenek, ne takarják a névjegy dobozt.
-const mq=matchMedia('(max-width:760px)'), sheet=()=>document.documentElement.style.setProperty('--sheet-h',(mq.matches?side.offsetHeight:0)+'px');
-if(window.ResizeObserver) new ResizeObserver(sheet).observe(side); else addEventListener('resize',sheet);
-sheet();
+$('list').addEventListener('click',e=>{ const b=e.target.closest('.item'); if(!b) return; select(F[+b.dataset.i],true); });
+// A szűrők a lista fölött nyílnak: nyitáskor a tetejére görgetünk, különben a lista közepéről nézve nem látszana semmi változás.
+$('fltBtn').addEventListener('click',()=>{ const o=$('filters').classList.toggle('open'); $('fltBtn').setAttribute('aria-expanded',o); if(o) $('scroll').scrollTop=0; });
+
+// ——— Mobil: húzható alsó lap három állással ———
+const side=$('side'), hdr=side.querySelector('header'), handle=$('handle'), mq=matchMedia('(max-width:760px)');
+const STATES=['peek','half','full'], STNAME={peek:'összecsukva',half:'félig nyitva',full:'teljesen nyitva'};
+let state='peek';
+// save: a felhasználó állította (koppintás, húzás) → megjegyezzük, mint az alapréteget. A kiválasztáskori automatikus csukást nem.
+function setState(s,save){ state=s; side.dataset.state=s;
+ handle.setAttribute('aria-label',`Lista panel: ${STNAME[s]}. Koppintással ${s==='full'?'összecsukódik':'nagyobbra nyílik'}.`);
+ if(save) try{ localStorage.setItem('erdo-panel',s); }catch(_){} }
+const cycle=()=>setState(STATES[(STATES.indexOf(state)+1)%STATES.length],true);
+// Az állások magassága pixelben (a húzás elengedésekor a legközelebbihez ugrik).
+const heights=()=>{ const H=document.body.clientHeight; return {peek:barH, half:H*.5, full:H-48}; };
+
+// A térkép a lap csúcs állása fölött ér véget (--bar-h): a fejléc magassága a szélességtől és a tartalomtól függ, ezért mérjük.
+let barH=-1;
+const bar=()=>{ const h=mq.matches?hdr.offsetHeight+1:0; if(h===barH) return; barH=h;
+ document.documentElement.style.setProperty('--bar-h',h+'px'); map.invalidateSize(); };
+if(window.ResizeObserver) new ResizeObserver(bar).observe(hdr); addEventListener('resize',bar);
+
+// Húzás a fejlécen (touch-action:none, így nem akad össze a lista görgetésével); koppintás a fejlécen vagy a fogantyún: következő állás.
+let drag=null, dragged=false;
+hdr.addEventListener('pointerdown',e=>{ if(!mq.matches || e.button>0) return; dragged=false;
+ drag={id:e.pointerId,y:e.clientY,h:side.offsetHeight,ly:e.clientY,lt:e.timeStamp,v:0}; });
+// A mozgást az ablakon figyeljük: egérrel nincs automatikus pointer capture, és az első lépés már a fejlécen kívülre eshet.
+addEventListener('pointermove',e=>{ if(!drag || e.pointerId!==drag.id) return;
+ if(e.pointerType==='mouse' && !e.buttons){ drag=null; return; }
+ const dy=e.clientY-drag.y;
+ if(!dragged){ if(Math.abs(dy)<6) return; dragged=true; hdr.setPointerCapture(e.pointerId); side.classList.add('drag'); }
+ const dt=e.timeStamp-drag.lt; if(dt>0){ drag.v=(e.clientY-drag.ly)/dt; drag.ly=e.clientY; drag.lt=e.timeStamp; }
+ const hs=heights(); side.style.height=Math.max(hs.peek,Math.min(hs.full,drag.h-dy))+'px'; });
+const dragEnd=e=>{ if(!drag || e.pointerId!==drag.id) return; const d=drag; drag=null; if(!dragged) return;
+ const h=side.offsetHeight, hs=heights(); let s;
+ if(d.v<-.4) s=STATES.find(k=>hs[k]>h+8)||'full';                 // gyors pöccintés felfelé: a következő nagyobb állás
+ else if(d.v>.4) s=[...STATES].reverse().find(k=>hs[k]<h-8)||'peek'; // lefelé: a következő kisebb
+ else s=STATES.reduce((a,k)=>Math.abs(hs[k]-h)<Math.abs(hs[a]-h)?k:a);
+ side.classList.remove('drag'); side.style.height=''; setState(s,true);
+ setTimeout(()=>{ dragged=false; });   // a húzás utáni esetleges kattintást még elnyeli, de a következő (pl. billentyűs) koppintást már nem
+};
+addEventListener('pointerup',dragEnd); addEventListener('pointercancel',dragEnd);
+hdr.addEventListener('click',e=>{ if(!mq.matches) return; if(dragged){ dragged=false; return; }
+ if(e.target.closest('a,button:not(#handle)')) return; cycle(); });
+
+// A névjegy sáv mobilon a görgethető rész aljára kerül, asztalon a panel alján marad.
+const about=$('about');
+function layout(){ if(mq.matches) $('scroll').appendChild(about); else { side.appendChild(about); side.classList.remove('drag'); side.style.height=''; }
+ if(selected){ map.closePopup(); deselect(); } bar(); }
+mq.addEventListener ? mq.addEventListener('change',layout) : mq.addListener(layout);
+// Első látogatáskor fél állásban nyílik, hogy látszódjon: a lap nem csak lábléc. Később a legutóbb beállított állásban.
+let saved=null; try{ saved=localStorage.getItem('erdo-panel'); }catch(_){}
+setState(STATES.includes(saved)?saved:'half'); layout();
 
 render();
-if(group.getLayers().length) map.fitBounds(group.getBounds(),{padding:[30,30]});
+bar();   // a számlálók kitöltése után a fejléc végleges magasságával, hogy a kezdő nagyítás a látható térképre essen
+fitAll();
 }
 </script>
 </body>
